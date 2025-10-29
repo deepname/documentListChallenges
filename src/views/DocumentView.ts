@@ -3,6 +3,7 @@ import { ViewMode } from '../store/Store';
 import { CardComponent } from './components/CardComponent';
 import { ControlsComponent } from './components/ControlsComponent';
 import { NotificationComponent } from './components/NotificationComponent';
+import { ModalComponent } from './components/ModalComponent';
 import { escapeHtml } from '../utils/htmlUtils';
 
 export class DocumentView {
@@ -10,6 +11,7 @@ export class DocumentView {
   private cardComponent: CardComponent;
   private controlsComponent: ControlsComponent;
   private notificationComponent: NotificationComponent;
+  private modalComponent: ModalComponent;
 
   constructor(containerId: string) {
     const element = document.getElementById(containerId);
@@ -20,6 +22,7 @@ export class DocumentView {
     this.cardComponent = new CardComponent();
     this.controlsComponent = new ControlsComponent();
     this.notificationComponent = new NotificationComponent();
+    this.modalComponent = new ModalComponent();
   }
 
   render(
@@ -111,6 +114,10 @@ export class DocumentView {
 
   showNotification(message: string): void {
     this.notificationComponent.show(this.container, message);
+  }
+
+  showModal(onSubmit: (doc: Document) => void): void {
+    this.modalComponent.show(this.container, onSubmit);
   }
 
 }

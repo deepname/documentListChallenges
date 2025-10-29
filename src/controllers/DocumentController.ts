@@ -50,25 +50,10 @@ export class DocumentController {
   }
 
   private handleCreate(): void {
-    const title = prompt('Enter document name:');
-    if (!title) return;
-
-    const document: Document = {
-      ID: crypto.randomUUID(),
-      Title: title,
-      Contributors: [
-        {
-          ID: crypto.randomUUID(),
-          Name: 'Current User',
-        }
-      ],
-      Version: Math.floor(Math.random() * 100001),
-      Attachments: [],
-      CreatedAt: new Date(),
-      UpdatedAt: new Date()
-    };
-
-    this.store.addDocument(document);
+    this.view.showModal((document: Document) => {
+      this.store.addDocument(document);
+      this.view.showNotification(`Document created: ${document.Title}`);
+    });
   }
 
   private handleNewDocument(notification: SocketsNotification): void {

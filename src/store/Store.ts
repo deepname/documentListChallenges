@@ -25,7 +25,7 @@ export class Store {
           comparison = a.Title.localeCompare(b.Title);
           break;
         case 'Version':
-          comparison = a.Version - b.Version;
+          comparison = this.compareVersions(a.Version, b.Version);
           break;
         case 'CreatedAt':
           comparison = a.CreatedAt.getTime() - b.CreatedAt.getTime();
@@ -34,6 +34,26 @@ export class Store {
       
       return this.sortOrder === 'asc' ? comparison : -comparison;
     });
+  }
+
+  private compareVersions(a: number | string, b: number | string): number {
+    const aStr = String(a);
+    const bStr = String(b);
+    
+    // If both are semantic versions (x.x.x), compare them properly
+    if (aStr.includes('.') && bStr.includes('.')) {
+      const aParts = aStr.split('.').map(n => parseInt(n) || 0);
+      const bParts = bStr.split('.').map(n => parseInt(n) || 0);
+      
+      for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+        const diff = (aParts[i] || 0) - (bParts[i] || 0);
+        if (diff !== 0) return diff;
+      }
+      return 0;
+    }
+    
+    // Fallback to numeric comparison
+    return Number(a) - Number(b);
   }
 
   private notify(): void {

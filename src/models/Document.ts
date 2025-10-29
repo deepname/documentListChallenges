@@ -7,7 +7,7 @@ export interface Document {
   ID: string;
   Title: string;
   Contributors: Contributors[];
-  Version: number;
+  Version: number | string;
   Attachments: string[];
   CreatedAt: Date;
   UpdatedAt: Date;
