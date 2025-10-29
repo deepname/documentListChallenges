@@ -16,7 +16,10 @@ apiService
   .fetchDocuments()
   .then(documents => {
     const store = Store.getInstance();
-    documents.forEach(doc => store.addDocument(doc));
+    // Only add documents if localStorage is empty (first load)
+    if (store.getDocuments().length === 0) {
+      documents.forEach(doc => store.addDocument(doc));
+    }
     controller.connect();
   })
   .catch(error => {

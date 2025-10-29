@@ -6,6 +6,7 @@ export class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 3000;
+  private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(onDocumentReceived: (notification: SocketsNotification) => void) {
     this.onDocumentReceived = onDocumentReceived;
@@ -51,17 +52,25 @@ export class WebSocketService {
       console.warn(
         `🔄 Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}...`
       );
-      setTimeout(() => this.connect(), this.reconnectDelay);
+      this.reconnectTimeout = setTimeout(() => this.connect(), this.reconnectDelay);
     } else {
       console.warn('📴 Running in offline mode - data saved locally');
     }
   }
 
   disconnect(): void {
+    // Clear any pending reconnection attempts
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+
     if (this.ws) {
       this.ws.close();
       this.ws = null;
     }
+
+    this.reconnectAttempts = 0;
   }
 
   send(data: unknown): void {

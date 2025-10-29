@@ -77,6 +77,13 @@ export class Store {
   }
 
   addDocument(document: Document): void {
+    // Prevent duplicate documents
+    const exists = this.documents.some(doc => doc.ID === document.ID);
+    if (exists) {
+      console.warn(`Document with ID ${document.ID} already exists`);
+      return;
+    }
+
     this.documents.push(document);
     saveDocuments(this.documents);
     this.notify();
