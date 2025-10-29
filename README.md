@@ -73,7 +73,22 @@ The application includes WebSocket support for real-time document updates. To te
 2. Send messages in this format:
 
 ```json
- {
+{
+  "Timestamp":"2020-08-12T07:30:08.28093+02:00",
+  "UserID":"3ffe27e5-fe2c-45ea-8b3c-879b757b0455",
+  "UserName":"Alicia Wolf",
+  "DocumentID":"f09acc46-3875-4eff-8831-10ccf3356420",
+  "DocumentTitle":"Edmund Fitzgerald Porter"
+}
+```
+
+## Documents Integration
+
+1. Start a WebSocket server on `ws://localhost:8080`
+2. Send messages in this format:
+
+```json
+{
   "Attachments": [
     "European Amber Lager",
     "Wood-aged Beer"
