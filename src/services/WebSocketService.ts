@@ -18,7 +18,7 @@ export class WebSocketService {
       this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {
-        console.log('✅ WebSocket connected - real-time updates enabled');
+        console.warn('✅ WebSocket connected - real-time updates enabled');
         this.reconnectAttempts = 0;
       };
 
@@ -36,7 +36,7 @@ export class WebSocketService {
       };
 
       this.ws.onclose = () => {
-        console.log('🔌 WebSocket disconnected - attempting reconnection...');
+        console.warn('🔌 WebSocket disconnected - attempting reconnection...');
         this.attemptReconnect();
       };
     } catch (error) {
@@ -48,12 +48,12 @@ export class WebSocketService {
   private attemptReconnect(): void {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(
+      console.warn(
         `🔄 Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}...`
       );
       setTimeout(() => this.connect(), this.reconnectDelay);
     } else {
-      console.log('📴 Running in offline mode - data saved locally');
+      console.warn('📴 Running in offline mode - data saved locally');
     }
   }
 

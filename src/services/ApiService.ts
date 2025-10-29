@@ -1,4 +1,5 @@
 import { Document } from '../models/Document';
+import { parseDocumentDates } from '../utils/documentUtils';
 
 export class ApiService {
   private baseUrl: string;
@@ -13,10 +14,6 @@ export class ApiService {
       throw new Error(`Failed to fetch documents: ${response.statusText}`);
     }
     const data = await response.json();
-    return data.map((doc: any) => ({
-      ...doc,
-      CreatedAt: new Date(doc.CreatedAt),
-      UpdatedAt: new Date(doc.UpdatedAt),
-    }));
+    return data.map((doc: Document) => parseDocumentDates(doc));
   }
 }

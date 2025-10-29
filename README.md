@@ -93,7 +93,9 @@ src/
 ├── store/
 │   └── Store.ts             # Centralized state management
 ├── utils/
-│   └── htmlUtils.ts         # Shared utility functions
+│   ├── documentUtils.ts     # Document transformation utilities
+│   ├── htmlUtils.ts         # HTML escaping utilities
+│   └── storageUtils.ts      # localStorage utilities
 ├── views/
 │   └── DocumentView.ts      # UI rendering
 ├── main.ts                  # Application entry point

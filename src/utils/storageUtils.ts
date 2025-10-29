@@ -1,4 +1,5 @@
 import { Document } from '../models/Document';
+import { parseDocumentDates } from './documentUtils';
 
 const STORAGE_KEY = 'documents';
 
@@ -17,11 +18,7 @@ export function loadDocuments(): Document[] {
     if (!serialized) return [];
 
     const data = JSON.parse(serialized);
-    return data.map((doc: any) => ({
-      ...doc,
-      CreatedAt: new Date(doc.CreatedAt),
-      UpdatedAt: new Date(doc.UpdatedAt),
-    }));
+    return data.map((doc: Document) => parseDocumentDates(doc));
   } catch (error) {
     console.error('Failed to load documents:', error);
     return [];
