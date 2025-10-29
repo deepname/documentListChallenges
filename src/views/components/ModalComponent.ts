@@ -31,7 +31,10 @@ export class ModalComponent {
               <div id="contributorsList" class="contributors-list">
                 ${this.renderContributors()}
               </div>
-              <button type="button" class="btn-secondary" id="addContributor">+ Add Contributor</button>
+              <div class="inline-add">
+                <input type="text" id="contributorInput" placeholder="Contributor name">
+                <button type="button" class="btn-secondary" id="addContributor">Add</button>
+              </div>
             </div>
 
             <div class="form-group">
@@ -39,7 +42,10 @@ export class ModalComponent {
               <div id="attachmentsList" class="attachments-list">
                 ${this.renderAttachments()}
               </div>
-              <button type="button" class="btn-secondary" id="addAttachment">+ Add Attachment</button>
+              <div class="inline-add">
+                <input type="text" id="attachmentInput" placeholder="Attachment name">
+                <button type="button" class="btn-secondary" id="addAttachment">Add</button>
+              </div>
             </div>
 
             <div class="modal-actions">
@@ -135,19 +141,25 @@ export class ModalComponent {
       }
     });
 
+    const contributorInput = modal.querySelector('#contributorInput') as HTMLInputElement;
     addContributorBtn?.addEventListener('click', () => {
-      const name = prompt('Enter contributor name:');
-      if (name?.trim()) {
-        this.contributors.push({ id: crypto.randomUUID(), name: name.trim() });
+      const name = contributorInput.value.trim();
+      if (name) {
+        this.contributors.push({ id: crypto.randomUUID(), name });
         this.updateContributorsList(modal);
+        contributorInput.value = '';
+        contributorInput.focus();
       }
     });
 
+    const attachmentInput = modal.querySelector('#attachmentInput') as HTMLInputElement;
     addAttachmentBtn?.addEventListener('click', () => {
-      const attachment = prompt('Enter attachment name:');
-      if (attachment?.trim()) {
-        this.attachments.push(attachment.trim());
+      const attachment = attachmentInput.value.trim();
+      if (attachment) {
+        this.attachments.push(attachment);
         this.updateAttachmentsList(modal);
+        attachmentInput.value = '';
+        attachmentInput.focus();
       }
     });
 

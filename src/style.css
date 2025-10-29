@@ -553,6 +553,27 @@ body {
   text-align: center;
 }
 
+.inline-add {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.inline-add input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+
+.inline-add input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
 .btn-secondary {
   background: var(--background);
   color: var(--primary);
@@ -563,7 +584,11 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  width: 100%;
+}
+
+.inline-add .btn-secondary {
+  width: auto;
+  flex-shrink: 0;
 }
 
 .btn-secondary:hover {
