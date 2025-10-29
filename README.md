@@ -28,11 +28,12 @@ A modern single-page application built with **Vanilla TypeScript**, **Vite**, an
 ### Prerequisites
 - Node.js (v18 or higher)
 - npm or yarn
+- Chrome 130+ (last 2 versions recommended)
 
 ### Installation
 
 ```bash
-# Install dependencies
+# Install dependencies (includes automated browser targeting)
 npm install
 
 # Start development server
@@ -46,6 +47,22 @@ npm run preview
 ```
 
 The application will be available at `http://localhost:3000`
+
+### Browser Targeting Setup
+
+The application uses **automated browser targeting** to ensure compatibility with the last 2 Chrome versions:
+
+1. **Install browser targeting packages** (if not already installed):
+   ```bash
+   npm install --save-dev browserslist browserslist-to-esbuild
+   ```
+
+2. **Configuration is automatic** - the `.browserslistrc` file contains:
+   ```
+   last 2 Chrome versions
+   ```
+
+3. **Build process automatically resolves** the current Chrome versions at build time - no manual updates needed!
 
 ## 📁 Project Structure
 
@@ -132,6 +149,12 @@ The app will gracefully handle connection failures and attempt reconnection.
 - **Native WebSocket API**: Real-time communication
 - **CSS3**: Modern styling with CSS variables
 - **ES Modules**: Modern JavaScript modules
+
+## 🌐 Browser Compatibility
+
+This application is optimized for the **last 2 versions of Chrome** (130+). 
+
+See [BROWSER_COMPATIBILITY.md](./BROWSER_COMPATIBILITY.md) for detailed compatibility information.
 
 ## 📝 License
 
