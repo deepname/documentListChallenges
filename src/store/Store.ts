@@ -1,4 +1,5 @@
 import { Document, SortField, SortOrder } from '../models/Document';
+import { saveDocuments, loadDocuments } from '../utils/storageUtils';
 
 type Listener = () => void;
 export type ViewMode = 'list' | 'grid';
@@ -11,7 +12,33 @@ export class Store {
   private sortOrder: SortOrder = 'desc';
   private viewMode: ViewMode = 'list';
 
-  private constructor() {}
+  private constructor() {
+    this.documents = loadDocuments();
+  }
+
+  private sortDocuments(docs: Document[]): Document[] {
+    return docs.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (this.sortField) {
+        case 'Title':
+          comparison = a.Title.localeCompare(b.Title);
+          break;
+        case 'Version':
+          comparison = a.Version - b.Version;
+          break;
+        case 'CreatedAt':
+          comparison = a.CreatedAt.getTime() - b.CreatedAt.getTime();
+          break;
+      }
+      
+      return this.sortOrder === 'asc' ? comparison : -comparison;
+    });
+  }
+
+  private notify(): void {
+    this.listeners.forEach(listener => listener());
+  }
 
   static getInstance(): Store {
     if (!Store.instance) {
@@ -25,16 +52,13 @@ export class Store {
     return () => this.listeners.delete(listener);
   }
 
-  private notify(): void {
-    this.listeners.forEach(listener => listener());
-  }
-
   getDocuments(): Document[] {
     return this.sortDocuments([...this.documents]);
   }
 
   addDocument(document: Document): void {
     this.documents.push(document);
+    saveDocuments(this.documents);
     this.notify();
   }
 
@@ -63,25 +87,5 @@ export class Store {
 
   getViewMode(): ViewMode {
     return this.viewMode;
-  }
-
-  private sortDocuments(docs: Document[]): Document[] {
-    return docs.sort((a, b) => {
-      let comparison = 0;
-      
-      switch (this.sortField) {
-        case 'Title':
-          comparison = a.Title.localeCompare(b.Title);
-          break;
-        case 'Version':
-          comparison = a.Version - b.Version;
-          break;
-        case 'CreatedAt':
-          comparison = a.CreatedAt.getTime() - b.CreatedAt.getTime();
-          break;
-      }
-      
-      return this.sortOrder === 'asc' ? comparison : -comparison;
-    });
   }
 }

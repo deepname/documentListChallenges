@@ -18,7 +18,7 @@ export class WebSocketService {
       this.ws = new WebSocket(wsUrl);
       
       this.ws.onopen = () => {
-        console.log('WebSocket connected');
+        console.log('✅ WebSocket connected - real-time updates enabled');
         this.reconnectAttempts = 0;
       };
       
@@ -31,12 +31,12 @@ export class WebSocketService {
         }
       };
       
-      this.ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
+      this.ws.onerror = () => {
+        console.warn('⚠️ WebSocket connection failed - app continues in offline mode');
       };
       
       this.ws.onclose = () => {
-        console.log('WebSocket disconnected');
+        console.log('🔌 WebSocket disconnected - attempting reconnection...');
         this.attemptReconnect();
       };
     } catch (error) {
@@ -48,10 +48,10 @@ export class WebSocketService {
   private attemptReconnect(): void {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+      console.log(`🔄 Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}...`);
       setTimeout(() => this.connect(), this.reconnectDelay);
     } else {
-      console.log('Max reconnection attempts reached. WebSocket will remain disconnected.');
+      console.log('📴 Running in offline mode - data saved locally');
     }
   }
 

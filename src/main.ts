@@ -11,7 +11,7 @@ app.innerHTML = '<div id="document-container"></div>';
 
 const controller = new DocumentController('document-container');
 
-// Fetch documents from API
+// Fetch documents from API (works offline with localStorage)
 apiService.fetchDocuments()
   .then(documents => {
     const store = Store.getInstance();
@@ -19,7 +19,9 @@ apiService.fetchDocuments()
     controller.connect();
   })
   .catch(error => {
-    console.error('Failed to load documents:', error);
+    console.warn('Server unavailable, running in offline mode:', error);
+    // App continues to work with localStorage data
+    controller.connect(); // Still attempt WebSocket connection
   });
 
 // Cleanup on page unload

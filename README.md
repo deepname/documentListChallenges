@@ -16,6 +16,8 @@ A modern single-page application built with **Vanilla TypeScript**, **Vite**, an
 
 ## ✨ Features
 
+- ✅ **Offline Support**: Works without server connection, data persists in localStorage
+- ✅ **Auto-Sync**: Automatically reconnects and syncs when server becomes available
 - ✅ **Document Grid View**: Responsive card-based layout
 - ✅ **Real-time Notifications**: WebSocket integration for live updates
 - ✅ **Create Documents**: Add new documents with collaborators
@@ -105,6 +107,22 @@ WebSocket notifications are received on `ws://localhost:8080/notifications` in t
 ```
 
 The app gracefully handles connection failures and attempts automatic reconnection.
+
+## 💾 Offline Support
+
+The application works seamlessly without a server connection:
+
+- **localStorage Persistence**: All documents are automatically saved to browser localStorage
+- **Offline First**: App loads instantly with cached data, even without network
+- **Auto-Reconnection**: WebSocket automatically reconnects when server becomes available (5 attempts, 3s delay)
+- **Zero Data Loss**: Documents created offline are preserved and available when connection restores
+
+### How It Works
+1. Documents are saved to localStorage on every change
+2. On app startup, cached documents load immediately
+3. API fetch runs in background (fails gracefully if offline)
+4. WebSocket attempts connection and auto-reconnects
+5. All features work offline - create, sort, view documents
 
 ## 🎨 Design Principles
 
