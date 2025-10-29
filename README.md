@@ -97,6 +97,13 @@ src/
 │   ├── htmlUtils.ts         # HTML escaping utilities
 │   └── storageUtils.ts      # localStorage utilities
 ├── views/
+|   ├── Components/
+|   |   ├── DocumentCard.tsx
+|   |   ├── DocumentList.tsx
+|   |   ├── DocumentModal.tsx
+|   |   ├── DocumentView.tsx
+|   |   ├── SortButton.tsx
+|   |   └── ViewModeToggle.tsx
 │   └── DocumentView.ts      # UI rendering
 ├── main.ts                  # Application entry point
 └── style.css                # Global styles
