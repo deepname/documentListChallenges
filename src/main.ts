@@ -3,7 +3,6 @@ import { DocumentController } from './controllers/DocumentController';
 import { Store } from './store/Store';
 import { ApiService } from './services/ApiService';
 
-const store = Store.getInstance();
 const apiService = new ApiService();
 
 // Initialize the application
@@ -15,6 +14,7 @@ const controller = new DocumentController('document-container');
 // Fetch documents from API
 apiService.fetchDocuments()
   .then(documents => {
+    const store = Store.getInstance();
     documents.forEach(doc => store.addDocument(doc));
     controller.connect();
   })
