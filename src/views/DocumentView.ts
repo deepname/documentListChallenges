@@ -1,9 +1,15 @@
 import { Document, SortField } from '../models/Document';
 import { ViewMode } from '../store/Store';
+import { CardComponent } from './components/CardComponent';
+import { ControlsComponent } from './components/ControlsComponent';
+import { NotificationComponent } from './components/NotificationComponent';
+import { escapeHtml } from '../utils/htmlUtils';
 
 export class DocumentView {
   private container: HTMLElement;
-  private notificationCount: number = 0;
+  private cardComponent: CardComponent;
+  private controlsComponent: ControlsComponent;
+  private notificationComponent: NotificationComponent;
 
   constructor(containerId: string) {
     const element = document.getElementById(containerId);
@@ -11,6 +17,9 @@ export class DocumentView {
       throw new Error(`Container with id "${containerId}" not found`);
     }
     this.container = element;
+    this.cardComponent = new CardComponent();
+    this.controlsComponent = new ControlsComponent();
+    this.notificationComponent = new NotificationComponent();
   }
 
   render(
@@ -27,36 +36,7 @@ export class DocumentView {
           <h1>Documents</h1>
         </header>
         
-        <div class="controls">
-          <div class="sort-controls">
-            <label>Sort by:</label>
-            <select class="sort-dropdown" id="sortDropdown">
-              <option value="Title" ${sortField === 'Title' ? 'selected' : ''}>Name</option>
-              <option value="Version" ${sortField === 'Version' ? 'selected' : ''}>Version</option>
-              <option value="CreatedAt" ${sortField === 'CreatedAt' ? 'selected' : ''}>Date</option>
-            </select>
-          </div>
-          <div class="view-controls">
-            <button class="view-btn ${viewMode === 'list' ? 'active' : ''}" data-view="list" title="List view">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="8" y1="6" x2="21" y2="6"></line>
-                <line x1="8" y1="12" x2="21" y2="12"></line>
-                <line x1="8" y1="18" x2="21" y2="18"></line>
-                <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                <line x1="3" y1="18" x2="3.01" y2="18"></line>
-              </svg>
-            </button>
-            <button class="view-btn ${viewMode === 'grid' ? 'active' : ''}" data-view="grid" title="Grid view">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"></rect>
-                <rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="14" y="14" width="7" height="7"></rect>
-                <rect x="3" y="14" width="7" height="7"></rect>
-              </svg>
-            </button>
-          </div>
-        </div>
+        ${this.controlsComponent.render(sortField, viewMode)}
 
         <div class="document-container ${viewMode}">
           ${viewMode === 'list' ? this.renderListView(documents) : this.renderGridView(documents)}
@@ -64,16 +44,7 @@ export class DocumentView {
 
         <button class="btn-add" id="createBtn">+ Add document</button>
 
-        <div id="notification" class="notification-container hidden">
-          <div class="notification-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-            <span class="notification-badge" id="notificationBadge">0</span>
-          </div>
-          <span class="notification-text" id="notificationText"></span>
-        </div>
+        ${this.notificationComponent.render()}
       </div>
     `;
 
@@ -81,29 +52,7 @@ export class DocumentView {
   }
 
   private renderDocumentCard(doc: Document): string {
-    return `
-      <div class="document-card">
-        <div class="card-title">
-          <h3>${this.escapeHtml(doc.Title )}</h3>
-          <div class="card-version">Version ${doc.Version}</div>
-        </div>
-        
-        <div class="card-section">
-          ${doc.Contributors.map(c => `
-            <div class="card-item">${this.escapeHtml(c.Name)}</div>
-          `).join('')}
-        </div>
-        
-        <div class="card-section card-attachments">
-          ${doc.Attachments.length > 0 
-            ? doc.Attachments.map(a => `
-              <div class="card-item">${this.escapeHtml(a)}</div>
-            `).join('')
-            : ''
-          }
-        </div>
-      </div>
-    `;
+    return this.cardComponent.render(doc);
   }
 
   private renderListView(documents: Document[]): string {
@@ -125,15 +74,15 @@ export class DocumentView {
     return `
       <div class="list-item">
         <div class="col-name">
-          <div class="doc-name">${this.escapeHtml(doc.Title)}</div>
+          <div class="doc-name">${escapeHtml(doc.Title)}</div>
           <div class="doc-version">Version ${doc.Version}</div>
         </div>
         <div class="col-contributors">
-          ${doc.Contributors.map(c => `<div class="contributor-name">${this.escapeHtml(c.Name)}</div>`).join('')}
+          ${doc.Contributors.map(c => `<div class="contributor-name">${escapeHtml(c.Name)}</div>`).join('')}
         </div>
         <div class="col-attachments">
           ${doc.Attachments.length > 0 
-            ? doc.Attachments.map(a => `<div class="attachment-name">${this.escapeHtml(a)}</div>`).join('')
+            ? doc.Attachments.map(a => `<div class="attachment-name">${escapeHtml(a)}</div>`).join('')
             : '<span class="no-attachments">—</span>'
           }
         </div>
@@ -154,48 +103,14 @@ export class DocumentView {
     onCreate: () => void,
     onViewModeChange: (mode: ViewMode) => void
   ): void {
-    const sortDropdown = this.container.querySelector('#sortDropdown') as HTMLSelectElement;
-    sortDropdown?.addEventListener('change', () => {
-      onSort(sortDropdown.value as SortField);
-    });
-
-    const viewButtons = this.container.querySelectorAll('.view-btn');
-    viewButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const mode = (btn as HTMLElement).dataset.view as ViewMode;
-        onViewModeChange(mode);
-      });
-    });
+    this.controlsComponent.attachListeners(this.container, onSort, onViewModeChange);
 
     const createBtn = this.container.querySelector('#createBtn');
     createBtn?.addEventListener('click', onCreate);
   }
 
   showNotification(message: string): void {
-    this.notificationCount++;
-    
-    const notification = this.container.querySelector('#notification');
-    const notificationText = this.container.querySelector('#notificationText');
-    const notificationBadge = this.container.querySelector('#notificationBadge');
-    
-    if (notification && notificationText && notificationBadge) {
-      notificationText.textContent = message;
-      notificationBadge.textContent = this.notificationCount.toString();
-      
-      notification.classList.remove('hidden');
-      notification.classList.add('show');
-      
-      setTimeout(() => {
-        notification.classList.remove('show');
-        notification.classList.add('hidden');
-      }, 4000);
-    }
-  }
-
-  private escapeHtml(text: string): string {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    this.notificationComponent.show(this.container, message);
   }
 
 }
