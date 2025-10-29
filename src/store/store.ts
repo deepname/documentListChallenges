@@ -1,4 +1,4 @@
-import { Document, SortField, SortOrder } from '../models/Document';
+import { Document, SortField, SortOrder } from '../models/document';
 import { saveDocuments, loadDocuments } from '../utils/storageUtils';
 
 type Listener = () => void;

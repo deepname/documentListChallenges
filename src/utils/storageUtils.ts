@@ -1,4 +1,4 @@
-import { Document } from '../models/Document';
+import { Document } from '../models/document';
 import { parseDocumentDates } from './documentUtils';
 
 const STORAGE_KEY = 'documents';

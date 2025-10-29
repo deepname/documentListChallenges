@@ -1,5 +1,5 @@
-import { SortField } from '../../models/Document';
-import { ViewMode } from '../../store/Store';
+import { SortField } from '../../models/document';
+import { ViewMode } from '../../store/store';
 
 export class ControlsComponent {
   render(sortField: SortField, viewMode: ViewMode): string {

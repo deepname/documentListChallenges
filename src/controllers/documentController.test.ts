@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { DocumentController } from './DocumentController';
-import { Store } from '../store/Store';
-import { DocumentView } from '../views/DocumentView';
-import { WebSocketService } from '../services/WebSocketService';
-import { Document, SortField } from '../models/Document';
-import { SocketsNotification } from '../models/Sockets';
+import { DocumentController } from './documentController';
+import { Store } from '../store/store';
+import { DocumentView } from '../views/documentView';
+import { WebSocketService } from '../services/webSocketService';
+import { Document, SortField } from '../models/document';
+import { SocketsNotification } from '../models/sockets';
 
 // Mock dependencies
 vi.mock('../store/Store');

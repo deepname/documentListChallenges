@@ -1,8 +1,8 @@
-import { Document, SortField } from '../models/Document';
-import { Store } from '../store/Store';
-import { DocumentView } from '../views/DocumentView';
-import { WebSocketService } from '../services/WebSocketService';
-import { SocketsNotification } from '../models/Sockets';
+import { Document, SortField } from '../models/document';
+import { Store } from '../store/store';
+import { DocumentView } from '../views/documentView';
+import { WebSocketService } from '../services/webSocketService';
+import { SocketsNotification } from '../models/sockets';
 import { DocumentMapper } from '../utils/documentUtils';
 
 export class DocumentController {

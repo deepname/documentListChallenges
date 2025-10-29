@@ -1,4 +1,4 @@
-import { SocketsNotification } from '../models/Sockets';
+import { SocketsNotification } from '../models/sockets';
 
 export class WebSocketService {
   private ws: WebSocket | null = null;

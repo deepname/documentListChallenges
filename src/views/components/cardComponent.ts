@@ -1,4 +1,4 @@
-import { Document } from '../../models/Document';
+import { Document } from '../../models/document';
 import { escapeHtml } from '../../utils/htmlUtils';
 
 export class CardComponent {

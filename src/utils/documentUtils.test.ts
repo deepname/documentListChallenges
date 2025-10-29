@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { DocumentMapper, parseDocumentDates } from './documentUtils';
-import { SocketsNotification } from '../models/Sockets';
-import { Document } from '../models/Document';
+import { SocketsNotification } from '../models/sockets';
+import { Document } from '../models/document';
 
 describe('DocumentMapper', () => {
   describe('fromSocketNotification', () => {

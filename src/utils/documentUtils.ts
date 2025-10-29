@@ -1,5 +1,5 @@
-import { Document } from '../models/Document';
-import { SocketsNotification } from '../models/Sockets';
+import { Document } from '../models/document';
+import { SocketsNotification } from '../models/sockets';
 
 export class DocumentMapper {
   static fromSocketNotification(notification: SocketsNotification): Document {

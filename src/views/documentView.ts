@@ -1,9 +1,9 @@
-import { Document, SortField } from '../models/Document';
-import { ViewMode } from '../store/Store';
-import { CardComponent } from './components/CardComponent';
-import { ControlsComponent } from './components/ControlsComponent';
-import { NotificationComponent } from './components/NotificationComponent';
-import { ModalComponent } from './components/ModalComponent';
+import { Document, SortField } from '../models/document';
+import { ViewMode } from '../store/store';
+import { CardComponent } from './components/cardComponent';
+import { ControlsComponent } from './components/controlsComponent';
+import { NotificationComponent } from './components/notificationComponent';
+import { ModalComponent } from './components/modalComponent';
 import { escapeHtml } from '../utils/htmlUtils';
 
 export class DocumentView {

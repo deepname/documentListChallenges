@@ -1,7 +1,7 @@
 import './style.css';
-import { DocumentController } from './controllers/DocumentController';
-import { Store } from './store/Store';
-import { ApiService } from './services/ApiService';
+import { DocumentController } from './controllers/documentController';
+import { Store } from './store/store';
+import { ApiService } from './services/apiService';
 
 const apiService = new ApiService();
 

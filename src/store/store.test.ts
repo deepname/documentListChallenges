@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { Store } from './Store';
-import { Document } from '../models/Document';
+import { Store } from './store';
+import { Document } from '../models/document';
 import * as storageUtils from '../utils/storageUtils';
 
 // Mock storage utilities

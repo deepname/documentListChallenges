@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { saveDocuments, loadDocuments } from './storageUtils';
-import { Document } from '../models/Document';
+import { Document } from '../models/document';
 
 describe('storageUtils', () => {
   // Fast: Uses mocked localStorage
