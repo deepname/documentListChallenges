@@ -1,13 +1,13 @@
-import { Document } from '../models/Document';
+import { SocketsNotification } from '../models/Sockets';
 
 export class WebSocketService {
   private ws: WebSocket | null = null;
-  private onDocumentReceived: (document: Document) => void;
+  private onDocumentReceived: (notification: SocketsNotification) => void;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 3000;
 
-  constructor(onDocumentReceived: (document: Document) => void) {
+  constructor(onDocumentReceived: (notification: SocketsNotification) => void) {
     this.onDocumentReceived = onDocumentReceived;
   }
 
@@ -24,13 +24,8 @@ export class WebSocketService {
       
       this.ws.onmessage = (event) => {
         try {
-          const data = JSON.parse(event.data);
-          const document: Document = {
-            ...data,
-            CreatedAt: new Date(data.CreatedAt),
-            UpdatedAt: new Date(data.UpdatedAt)
-          };
-          this.onDocumentReceived(document);
+          const notification: SocketsNotification = JSON.parse(event.data);
+          this.onDocumentReceived(notification);
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
         }

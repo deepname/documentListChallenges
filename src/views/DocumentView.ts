@@ -1,4 +1,4 @@
-import { Document, SortField, SortOrder } from '../models/Document';
+import { Document, SortField } from '../models/Document';
 import { ViewMode } from '../store/Store';
 
 export class DocumentView {
@@ -15,7 +15,6 @@ export class DocumentView {
   render(
     documents: Document[],
     sortField: SortField,
-    sortOrder: SortOrder,
     viewMode: ViewMode,
     onSort: (field: SortField) => void,
     onCreate: () => void,
@@ -31,9 +30,9 @@ export class DocumentView {
           <div class="sort-controls">
             <label>Sort by:</label>
             <select class="sort-dropdown" id="sortDropdown">
-              <option value="name" ${sortField === 'Title' ? 'selected' : ''}>Name</option>
-              <option value="version" ${sortField === 'Version' ? 'selected' : ''}>Version</option>
-              <option value="createdAt" ${sortField === 'CreatedAt' ? 'selected' : ''}>Date</option>
+              <option value="Title" ${sortField === 'Title' ? 'selected' : ''}>Name</option>
+              <option value="Version" ${sortField === 'Version' ? 'selected' : ''}>Version</option>
+              <option value="CreatedAt" ${sortField === 'CreatedAt' ? 'selected' : ''}>Date</option>
             </select>
           </div>
           <div class="view-controls">
@@ -182,19 +181,4 @@ export class DocumentView {
     return div.innerHTML;
   }
 
-  private formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  }
-
-  private formatFileSize(bytes: number): string {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  }
 }

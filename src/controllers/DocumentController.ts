@@ -2,6 +2,7 @@ import { Document, SortField } from '../models/Document';
 import { Store } from '../store/Store';
 import { DocumentView } from '../views/DocumentView';
 import { WebSocketService } from '../services/WebSocketService';
+import { SocketsNotification } from '../models/Sockets';
 
 export class DocumentController {
   private store: Store;
@@ -20,13 +21,11 @@ export class DocumentController {
   private updateView(): void {
     const documents = this.store.getDocuments();
     const sortField = this.store.getSortField();
-    const sortOrder = this.store.getSortOrder();
     const viewMode = this.store.getViewMode();
     
     this.view.render(
       documents,
       sortField,
-      sortOrder,
       viewMode,
       this.handleSort.bind(this),
       this.handleCreate.bind(this),
@@ -72,7 +71,22 @@ export class DocumentController {
     this.store.addDocument(document);
   }
 
-  private handleNewDocument(document: Document): void {
+  private handleNewDocument(notification: SocketsNotification): void {
+    const document: Document = {
+      ID: notification.DocumentID,
+      Title: notification.DocumentTitle,
+      Contributors: [
+        {
+          ID: notification.UserID,
+          Name: notification.UserName,
+        }
+      ],
+      Version: 1,
+      Attachments: [],
+      CreatedAt: new Date(notification.Timestamp),
+      UpdatedAt: new Date(notification.Timestamp)
+    };
+    
     this.store.addDocument(document);
     this.view.showNotification(`New document added: ${document.Title}`);
   }

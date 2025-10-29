@@ -7,7 +7,7 @@ export class Store {
   private static instance: Store;
   private documents: Document[] = [];
   private listeners: Set<Listener> = new Set();
-  private sortField: SortField = 'createdAt';
+  private sortField: SortField = 'CreatedAt';
   private sortOrder: SortOrder = 'desc';
   private viewMode: ViewMode = 'list';
 
@@ -73,10 +73,10 @@ export class Store {
         case 'Title':
           comparison = a.Title.localeCompare(b.Title);
           break;
-        case 'version':
+        case 'Version':
           comparison = a.Version - b.Version;
           break;
-        case 'createdAt':
+        case 'CreatedAt':
           comparison = a.CreatedAt.getTime() - b.CreatedAt.getTime();
           break;
       }
