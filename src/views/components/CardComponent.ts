@@ -11,17 +11,22 @@ export class CardComponent {
         </div>
         
         <div class="card-section">
-          ${doc.Contributors.map(c => `
+          ${doc.Contributors.map(
+            c => `
             <div class="card-item">${escapeHtml(c.Name)}</div>
-          `).join('')}
+          `
+          ).join('')}
         </div>
         
         <div class="card-section card-attachments">
-          ${doc.Attachments.length > 0 
-            ? doc.Attachments.map(a => `
+          ${
+            doc.Attachments.length > 0
+              ? doc.Attachments.map(
+                  a => `
               <div class="card-item">${escapeHtml(a)}</div>
-            `).join('')
-            : ''
+            `
+                ).join('')
+              : ''
           }
         </div>
       </div>

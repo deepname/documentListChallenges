@@ -84,9 +84,12 @@ export class DocumentView {
           ${doc.Contributors.map(c => `<div class="contributor-name">${escapeHtml(c.Name)}</div>`).join('')}
         </div>
         <div class="col-attachments">
-          ${doc.Attachments.length > 0 
-            ? doc.Attachments.map(a => `<div class="attachment-name">${escapeHtml(a)}</div>`).join('')
-            : '<span class="no-attachments">—</span>'
+          ${
+            doc.Attachments.length > 0
+              ? doc.Attachments.map(
+                  a => `<div class="attachment-name">${escapeHtml(a)}</div>`
+                ).join('')
+              : '<span class="no-attachments">—</span>'
           }
         </div>
       </div>
@@ -119,5 +122,4 @@ export class DocumentView {
   showModal(onSubmit: (doc: Document) => void): void {
     this.modalComponent.show(this.container, onSubmit);
   }
-
 }

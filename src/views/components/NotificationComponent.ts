@@ -18,18 +18,18 @@ export class NotificationComponent {
 
   show(container: HTMLElement, message: string): void {
     this.notificationCount++;
-    
+
     const notification = container.querySelector('#notification');
     const notificationText = container.querySelector('#notificationText');
     const notificationBadge = container.querySelector('#notificationBadge');
-    
+
     if (notification && notificationText && notificationBadge) {
       notificationText.textContent = message;
       notificationBadge.textContent = this.notificationCount.toString();
-      
+
       notification.classList.remove('hidden');
       notification.classList.add('show');
-      
+
       setTimeout(() => {
         notification.classList.remove('show');
         notification.classList.add('hidden');

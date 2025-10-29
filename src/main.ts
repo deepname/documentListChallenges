@@ -12,7 +12,8 @@ app.innerHTML = '<div id="document-container"></div>';
 const controller = new DocumentController('document-container');
 
 // Fetch documents from API (works offline with localStorage)
-apiService.fetchDocuments()
+apiService
+  .fetchDocuments()
   .then(documents => {
     const store = Store.getInstance();
     documents.forEach(doc => store.addDocument(doc));

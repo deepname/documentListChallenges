@@ -15,12 +15,12 @@ export function loadDocuments(): Document[] {
   try {
     const serialized = localStorage.getItem(STORAGE_KEY);
     if (!serialized) return [];
-    
+
     const data = JSON.parse(serialized);
     return data.map((doc: any) => ({
       ...doc,
       CreatedAt: new Date(doc.CreatedAt),
-      UpdatedAt: new Date(doc.UpdatedAt)
+      UpdatedAt: new Date(doc.UpdatedAt),
     }));
   } catch (error) {
     console.error('Failed to load documents:', error);

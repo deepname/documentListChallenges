@@ -56,39 +56,47 @@ export class ModalComponent {
     if (this.contributors.length === 0) {
       return '<p class="empty-message">No contributors added yet</p>';
     }
-    return this.contributors.map((c, index) => `
+    return this.contributors
+      .map(
+        (c, index) => `
       <div class="list-item-row">
         <span>${escapeHtml(c.name)}</span>
         <button type="button" class="btn-remove" data-index="${index}" data-type="contributor">&times;</button>
       </div>
-    `).join('');
+    `
+      )
+      .join('');
   }
 
   private renderAttachments(): string {
     if (this.attachments.length === 0) {
       return '<p class="empty-message">No attachments added yet</p>';
     }
-    return this.attachments.map((a, index) => `
+    return this.attachments
+      .map(
+        (a, index) => `
       <div class="list-item-row">
         <span>${escapeHtml(a)}</span>
         <button type="button" class="btn-remove" data-index="${index}" data-type="attachment">&times;</button>
       </div>
-    `).join('');
+    `
+      )
+      .join('');
   }
 
   show(container: HTMLElement, onSubmit: (doc: Document) => void): void {
     this.contributors = [];
     this.attachments = [];
-    
+
     const modalHtml = this.render();
     const existingModal = container.querySelector('#modal');
     if (existingModal) {
       existingModal.remove();
     }
-    
+
     container.insertAdjacentHTML('beforeend', modalHtml);
     const modal = container.querySelector('#modal');
-    
+
     if (modal) {
       modal.classList.remove('hidden');
       this.attachListeners(modal as HTMLElement, onSubmit);
@@ -114,11 +122,11 @@ export class ModalComponent {
     overlay?.addEventListener('click', closeModal);
 
     // Version input mask handler
-    versionInput?.addEventListener('input', (e) => {
+    versionInput?.addEventListener('input', e => {
       const input = e.target as HTMLInputElement;
       const value = input.value.replace(/[^\d.]/g, ''); // Only numbers and dots
       const parts = value.split('.');
-      
+
       // Limit to 3 parts and format as x.x.x
       if (parts.length > 3) {
         input.value = parts.slice(0, 3).join('.');
@@ -143,12 +151,12 @@ export class ModalComponent {
       }
     });
 
-    modal.addEventListener('click', (e) => {
+    modal.addEventListener('click', e => {
       const target = e.target as HTMLElement;
       if (target.classList.contains('btn-remove')) {
         const index = parseInt(target.dataset.index || '0');
         const type = target.dataset.type;
-        
+
         if (type === 'contributor') {
           this.contributors.splice(index, 1);
           this.updateContributorsList(modal);
@@ -159,7 +167,7 @@ export class ModalComponent {
       }
     });
 
-    form?.addEventListener('submit', (e) => {
+    form?.addEventListener('submit', e => {
       e.preventDefault();
       const titleInput = modal.querySelector('#docTitle') as HTMLInputElement;
       const versionInput = modal.querySelector('#docVersion') as HTMLInputElement;
@@ -175,7 +183,7 @@ export class ModalComponent {
         Version: version,
         Attachments: [...this.attachments],
         CreatedAt: new Date(),
-        UpdatedAt: new Date()
+        UpdatedAt: new Date(),
       };
 
       onSubmit(document);

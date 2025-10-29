@@ -13,7 +13,7 @@ export class DocumentController {
     this.store = Store.getInstance();
     this.view = new DocumentView(containerId);
     this.wsService = new WebSocketService(this.handleNewDocument.bind(this));
-    
+
     this.store.subscribe(() => this.updateView());
     this.updateView();
   }
@@ -22,7 +22,7 @@ export class DocumentController {
     const documents = this.store.getDocuments();
     const sortField = this.store.getSortField();
     const viewMode = this.store.getViewMode();
-    
+
     this.view.render(
       documents,
       sortField,
@@ -36,7 +36,7 @@ export class DocumentController {
   private handleSort(field: SortField): void {
     const currentField = this.store.getSortField();
     const currentOrder = this.store.getSortOrder();
-    
+
     if (field === currentField) {
       this.store.setSortOrder(currentOrder === 'asc' ? 'desc' : 'asc');
     } else {
@@ -64,14 +64,14 @@ export class DocumentController {
         {
           ID: notification.UserID,
           Name: notification.UserName,
-        }
+        },
       ],
       Version: 1,
       Attachments: [],
       CreatedAt: new Date(notification.Timestamp),
-      UpdatedAt: new Date(notification.Timestamp)
+      UpdatedAt: new Date(notification.Timestamp),
     };
-    
+
     this.store.addDocument(document);
     this.view.showNotification(`New document added: ${document.Title}`);
   }

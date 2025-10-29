@@ -16,7 +16,7 @@ export class ApiService {
     return data.map((doc: any) => ({
       ...doc,
       CreatedAt: new Date(doc.CreatedAt),
-      UpdatedAt: new Date(doc.UpdatedAt)
+      UpdatedAt: new Date(doc.UpdatedAt),
     }));
   }
 }

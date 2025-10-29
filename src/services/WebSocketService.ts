@@ -13,16 +13,16 @@ export class WebSocketService {
 
   connect(): void {
     const wsUrl = 'ws://localhost:8080/notifications';
-    
+
     try {
       this.ws = new WebSocket(wsUrl);
-      
+
       this.ws.onopen = () => {
         console.log('✅ WebSocket connected - real-time updates enabled');
         this.reconnectAttempts = 0;
       };
-      
-      this.ws.onmessage = (event) => {
+
+      this.ws.onmessage = event => {
         try {
           const notification: SocketsNotification = JSON.parse(event.data);
           this.onDocumentReceived(notification);
@@ -30,11 +30,11 @@ export class WebSocketService {
           console.error('Error parsing WebSocket message:', error);
         }
       };
-      
+
       this.ws.onerror = () => {
         console.warn('⚠️ WebSocket connection failed - app continues in offline mode');
       };
-      
+
       this.ws.onclose = () => {
         console.log('🔌 WebSocket disconnected - attempting reconnection...');
         this.attemptReconnect();
@@ -48,7 +48,9 @@ export class WebSocketService {
   private attemptReconnect(): void {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`🔄 Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}...`);
+      console.log(
+        `🔄 Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}...`
+      );
       setTimeout(() => this.connect(), this.reconnectDelay);
     } else {
       console.log('📴 Running in offline mode - data saved locally');
