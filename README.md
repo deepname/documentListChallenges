@@ -46,6 +46,18 @@ npm run build
 
 # Preview production build
 npm run preview
+
+# Lint code
+npm run lint
+
+# Lint and auto-fix issues
+npm run lint:fix
+
+# Format code with Prettier
+npm run format
+
+# Check code formatting
+npm run format:check
 ```
 
 The application will be available at `http://localhost:3000`
@@ -139,6 +151,26 @@ The application works seamlessly without a server connection:
 - **Native WebSocket API**: Real-time communication
 - **CSS3**: Modern styling with CSS variables
 - **ES Modules**: Modern JavaScript modules
+
+## 🔍 Code Quality
+
+The project uses **ESLint** and **Prettier** to maintain code quality and consistency:
+
+- **ESLint**: TypeScript-aware linting with recommended rules
+- **Prettier**: Automatic code formatting
+- **Pre-configured**: Works out of the box with sensible defaults
+- **Auto-fix**: Most issues can be fixed automatically
+
+### Configuration
+- `.eslintrc.json` - ESLint rules and TypeScript integration
+- `.prettierrc.json` - Code formatting preferences
+- `.vscode/settings.json` - Editor settings for auto-format on save
+- Integrated with TypeScript for type-aware linting
+
+### Setup
+1. Run `npm install` to install ESLint and Prettier
+2. (Optional) Install VS Code extensions: ESLint and Prettier
+3. Code will auto-format on save and show linting errors inline
 
 ## 🌐 Browser Compatibility
 

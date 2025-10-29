@@ -1,0 +1,7 @@
+node_modules
+dist
+.git
+.ai
+*.config.ts
+*.config.js
+ws-server.js
