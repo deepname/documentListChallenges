@@ -3,16 +3,23 @@ import { Store } from '../store/Store';
 import { DocumentView } from '../views/DocumentView';
 import { WebSocketService } from '../services/WebSocketService';
 import { SocketsNotification } from '../models/Sockets';
+import { DocumentMapper } from '../utils/documentUtils';
 
 export class DocumentController {
   private store: Store;
   private view: DocumentView;
   private wsService: WebSocketService;
 
-  constructor(containerId: string) {
-    this.store = Store.getInstance();
-    this.view = new DocumentView(containerId);
-    this.wsService = new WebSocketService(this.handleNewDocument.bind(this));
+  constructor(
+    containerId: string,
+    store?: Store,
+    view?: DocumentView,
+    wsService?: WebSocketService
+  ) {
+    // Dependency Injection with defaults for backward compatibility
+    this.store = store || Store.getInstance();
+    this.view = view || new DocumentView(containerId);
+    this.wsService = wsService || new WebSocketService(this.handleNewDocument.bind(this));
 
     this.store.subscribe(() => this.updateView());
     this.updateView();
@@ -57,21 +64,7 @@ export class DocumentController {
   }
 
   private handleNewDocument(notification: SocketsNotification): void {
-    const document: Document = {
-      ID: notification.DocumentID,
-      Title: notification.DocumentTitle,
-      Contributors: [
-        {
-          ID: notification.UserID,
-          Name: notification.UserName,
-        },
-      ],
-      Version: 1,
-      Attachments: [],
-      CreatedAt: new Date(notification.Timestamp),
-      UpdatedAt: new Date(notification.Timestamp),
-    };
-
+    const document = DocumentMapper.fromSocketNotification(notification);
     this.store.addDocument(document);
     this.view.showNotification(`New document added: ${document.Title}`);
   }
