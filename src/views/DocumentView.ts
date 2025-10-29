@@ -3,6 +3,7 @@ import { ViewMode } from '../store/Store';
 
 export class DocumentView {
   private container: HTMLElement;
+  private notificationCount: number = 0;
 
   constructor(containerId: string) {
     const element = document.getElementById(containerId);
@@ -63,7 +64,16 @@ export class DocumentView {
 
         <button class="btn-add" id="createBtn">+ Add document</button>
 
-        <div id="notification" class="notification hidden"></div>
+        <div id="notification" class="notification-container hidden">
+          <div class="notification-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notification-badge" id="notificationBadge">0</span>
+          </div>
+          <span class="notification-text" id="notificationText"></span>
+        </div>
       </div>
     `;
 
@@ -162,16 +172,23 @@ export class DocumentView {
   }
 
   showNotification(message: string): void {
+    this.notificationCount++;
+    
     const notification = this.container.querySelector('#notification');
-    if (notification) {
-      notification.textContent = message;
+    const notificationText = this.container.querySelector('#notificationText');
+    const notificationBadge = this.container.querySelector('#notificationBadge');
+    
+    if (notification && notificationText && notificationBadge) {
+      notificationText.textContent = message;
+      notificationBadge.textContent = this.notificationCount.toString();
+      
       notification.classList.remove('hidden');
       notification.classList.add('show');
       
       setTimeout(() => {
         notification.classList.remove('show');
         notification.classList.add('hidden');
-      }, 3000);
+      }, 4000);
     }
   }
 
