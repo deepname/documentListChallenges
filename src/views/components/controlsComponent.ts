@@ -2,8 +2,8 @@ import { SortField } from '../../models/document';
 import { ViewMode } from '../../store/store';
 
 export class ControlsComponent {
-  render(sortField: SortField, viewMode: ViewMode): string {
-    return `
+    render(sortField: SortField, viewMode: ViewMode): string {
+        return `
       <div class="controls">
         <div class="sort-controls">
           <label>Sort by:</label>
@@ -35,24 +35,24 @@ export class ControlsComponent {
         </div>
       </div>
     `;
-  }
+    }
 
-  attachListeners(
-    container: HTMLElement,
-    onSort: (field: SortField) => void,
-    onViewModeChange: (mode: ViewMode) => void
-  ): void {
-    const sortDropdown = container.querySelector('#sortDropdown') as HTMLSelectElement;
-    sortDropdown?.addEventListener('change', () => {
-      onSort(sortDropdown.value as SortField);
-    });
+    attachListeners(
+        container: HTMLElement,
+        onSort: (field: SortField) => void,
+        onViewModeChange: (mode: ViewMode) => void
+    ): void {
+        const sortDropdown = container.querySelector('#sortDropdown') as HTMLSelectElement;
+        sortDropdown?.addEventListener('change', () => {
+            onSort(sortDropdown.value as SortField);
+        });
 
-    const viewButtons = container.querySelectorAll('.view-btn');
-    viewButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const mode = (btn as HTMLElement).dataset.view as ViewMode;
-        onViewModeChange(mode);
-      });
-    });
-  }
+        const viewButtons = container.querySelectorAll('.view-btn');
+        viewButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = (btn as HTMLElement).dataset.view as ViewMode;
+                onViewModeChange(mode);
+            });
+        });
+    }
 }

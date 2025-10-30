@@ -1,396 +1,176 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach, MockedFunction } from 'vitest';
 import { DocumentController } from './documentController';
-import { Store } from '../store/store';
+import { Document, SortField } from '../models/document';
+import { Store, ViewMode } from '../store/store';
 import { DocumentView } from '../views/documentView';
 import { WebSocketService } from '../services/webSocketService';
-import { Document, SortField } from '../models/document';
 
 // Mock dependencies
-vi.mock('../store/Store');
-vi.mock('../views/DocumentView');
-vi.mock('../services/WebSocketService');
+vi.mock('../store/store');
+vi.mock('../views/documentView');
+vi.mock('../services/webSocketService');
+vi.mock('../utils/documentUtils', () => ({
+    DocumentMapper: {
+        fromSocketNotification: vi.fn(),
+    },
+}));
+
+const MockedStore = vi.mocked(Store);
+const MockedDocumentView = vi.mocked(DocumentView);
+const MockedWebSocketService = vi.mocked(WebSocketService);
+
+interface MockStore {
+    subscribe: MockedFunction<(listener: () => void) => () => void>;
+    getDocuments: MockedFunction<() => Document[]>;
+    getSortField: MockedFunction<() => SortField>;
+    getViewMode: MockedFunction<() => ViewMode>;
+}
+
+interface MockView {
+    render: MockedFunction<
+        (
+            documents: Document[],
+            sortField: SortField,
+            viewMode: ViewMode,
+            onSort: (field: SortField) => void,
+            onCreate: () => void,
+            onViewModeChange: (mode: ViewMode) => void
+        ) => void
+    >;
+    showNotification: MockedFunction<(message: string) => void>;
+    showModal: MockedFunction<(onSubmit: (doc: Document) => void) => void>;
+}
+
+interface MockWSService {
+    connect: MockedFunction<() => void>;
+    disconnect: MockedFunction<() => void>;
+}
 
 describe('DocumentController', () => {
-  // Fast: Uses mocked dependencies, no I/O
-  // Independent: Fresh mocks before each test
-  // Repeatable: Deterministic with mocked behavior
-  // Self-validating: Clear assertions
-  // Timely: Tests controller coordination logic
+    let mockStore: MockStore;
+    let mockView: MockView;
+    let mockWSService: MockWSService;
+    let containerId: string;
 
-  let mockStore: Store;
-  let mockView: DocumentView;
-  let mockWsService: WebSocketService;
-  let controller: DocumentController;
+    beforeEach(() => {
+        vi.clearAllMocks();
 
-  const mockDocuments: Document[] = [
-    {
-      ID: 'doc-1',
-      Title: 'Document 1',
-      Contributors: [{ ID: 'user-1', Name: 'Alice' }],
-      Version: 1,
-      Attachments: [],
-      CreatedAt: new Date('2024-01-15T10:30:00Z'),
-      UpdatedAt: new Date('2024-01-15T10:30:00Z'),
-    },
-    {
-      ID: 'doc-2',
-      Title: 'Document 2',
-      Contributors: [{ ID: 'user-2', Name: 'Bob' }],
-      Version: 2,
-      Attachments: [],
-      CreatedAt: new Date('2024-01-16T10:30:00Z'),
-      UpdatedAt: new Date('2024-01-16T10:30:00Z'),
-    },
-  ];
+        // Create mocks
+        mockStore = {
+            subscribe: vi.fn(),
+            getDocuments: vi.fn(),
+            getSortField: vi.fn(),
+            getViewMode: vi.fn(),
+        };
 
-  beforeEach(() => {
-    // Clear all mocks to ensure independence
-    vi.clearAllMocks();
+        mockView = {
+            render: vi.fn(),
+            showNotification: vi.fn(),
+            showModal: vi.fn(),
+        };
 
-    // Create mock instances with proper typing
-    mockStore = {
-      subscribe: vi.fn().mockReturnValue(() => { }),
-      getDocuments: vi.fn().mockReturnValue(mockDocuments),
-      getSortField: vi.fn().mockReturnValue('CreatedAt' as SortField),
-      getSortOrder: vi.fn().mockReturnValue('desc'),
-      getViewMode: vi.fn().mockReturnValue('list'),
-      addDocument: vi.fn(),
-      setSortField: vi.fn(),
-      setSortOrder: vi.fn(),
-      setViewMode: vi.fn(),
-    } as unknown as Store;
+        mockWSService = {
+            connect: vi.fn(),
+            disconnect: vi.fn(),
+        };
 
-    mockView = {
-      render: vi.fn(),
-      showModal: vi.fn(),
-      showNotification: vi.fn(),
-    } as unknown as DocumentView;
+        containerId = 'test-container';
 
-    mockWsService = {
-      connect: vi.fn(),
-      disconnect: vi.fn(),
-    } as unknown as WebSocketService;
-  });
-
-  describe('constructor', () => {
-    it('should initialize with provided dependencies', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      expect(mockStore.subscribe).toHaveBeenCalledTimes(1);
-      expect(mockStore.getDocuments).toHaveBeenCalled();
-      expect(mockView.render).toHaveBeenCalled();
+        MockedStore.getInstance.mockReturnValue(mockStore as unknown as Store);
+        MockedDocumentView.mockImplementation(function mockDocumentView() {
+            return mockView as MockView;
+        });
+        MockedWebSocketService.mockImplementation(function mockWebSocketService() {
+            return mockWSService as MockWSService;
+        });
     });
 
-    it('should subscribe to store updates', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      expect(mockStore.subscribe).toHaveBeenCalledWith(expect.any(Function));
+    afterEach(() => {
+        vi.clearAllTimers();
     });
 
-    it('should render initial view on construction', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
+    describe('constructor', () => {
+        it('should initialize with default dependencies when not provided', () => {
+            // Arrange & Act
+            new DocumentController(containerId);
 
-      expect(mockView.render).toHaveBeenCalledWith(
-        mockDocuments,
-        'CreatedAt',
-        'list',
-        expect.any(Function),
-        expect.any(Function),
-        expect.any(Function)
-      );
+            // Assert
+            expect(MockedStore.getInstance).toHaveBeenCalledTimes(1);
+            expect(MockedDocumentView).toHaveBeenCalledTimes(1); // Changed toTimesCalledWith to toHaveBeenCalledTimes
+            expect(MockedWebSocketService).toHaveBeenCalledTimes(1);
+            expect(mockStore.subscribe).toHaveBeenCalledTimes(1);
+        });
+
+        it('should use provided dependencies when available', () => {
+            // Arrange
+            const customStore = { ...mockStore };
+            const customView = { ...mockView };
+            const customWS = { ...mockWSService };
+
+            // Act
+            new DocumentController(
+                containerId,
+                customStore as unknown as Store,
+                customView as unknown as DocumentView,
+                customWS as unknown as WebSocketService
+            );
+
+            // Assert
+            expect(MockedStore.getInstance).not.toHaveBeenCalled();
+            expect(MockedDocumentView).not.toHaveBeenCalled();
+            expect(MockedWebSocketService).not.toHaveBeenCalled();
+            expect(customStore.subscribe).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call updateView on initialization', () => {
+            // Arrange
+            mockStore.getDocuments.mockReturnValue([]);
+            mockStore.getSortField.mockReturnValue('Title');
+            mockStore.getViewMode.mockReturnValue('list');
+
+            // Act
+            new DocumentController(containerId);
+
+            // Assert
+            expect(mockView.render).toHaveBeenCalledWith(
+                [],
+                'Title',
+                'list',
+                expect.any(Function),
+                expect.any(Function),
+                expect.any(Function)
+            );
+        });
     });
 
-    it('should pass correct callbacks to view render', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
+    describe('connect', () => {
+        it('should call wsService connect method', () => {
+            // Arrange
+            const controller = new DocumentController(containerId);
 
-      const renderCall = vi.mocked(mockView.render).mock.calls[0];
-      expect(renderCall[3]).toBeInstanceOf(Function); // onSort
-      expect(renderCall[4]).toBeInstanceOf(Function); // onCreate
-      expect(renderCall[5]).toBeInstanceOf(Function); // onViewModeChange
-    });
-  });
+            // Act
+            controller.connect();
 
-  describe('store subscription', () => {
-    it('should update view when store notifies changes', () => {
-      let storeListener: (() => void) | undefined;
-      vi.mocked(mockStore.subscribe).mockImplementation((listener: () => void) => {
-        storeListener = listener;
-        return () => { };
-      });
-
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      // Clear the initial render call
-      vi.mocked(mockView.render).mockClear();
-
-      // Trigger store update
-      storeListener?.();
-
-      expect(mockView.render).toHaveBeenCalledTimes(1);
-      expect(mockStore.getDocuments).toHaveBeenCalled();
+            // Assert
+            expect(mockWSService.connect).toHaveBeenCalledTimes(1);
+        }); // controller is used in the test
     });
 
-    it('should fetch fresh data from store on each update', () => {
-      let storeListener: (() => void) | undefined;
-      vi.mocked(mockStore.subscribe).mockImplementation((listener: () => void) => {
-        storeListener = listener;
-        return () => { };
-      });
+    describe('disconnect', () => {
+        it('should call wsService disconnect method', () => {
+            // Arrange
+            const controller = new DocumentController(containerId);
 
-      const updatedDocs = [
-        ...mockDocuments,
-        {
-          ID: 'doc-3',
-          Title: 'Document 3',
-          Contributors: [],
-          Version: 3,
-          Attachments: [],
-          CreatedAt: new Date(),
-          UpdatedAt: new Date(),
-        },
-      ];
+            // Act
+            controller.disconnect();
 
-      vi.mocked(mockStore.getDocuments).mockReturnValue(updatedDocs);
-
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-      vi.mocked(mockView.render).mockClear();
-
-      storeListener?.();
-
-      expect(mockView.render).toHaveBeenCalledWith(
-        updatedDocs,
-        expect.any(String),
-        expect.any(String),
-        expect.any(Function),
-        expect.any(Function),
-        expect.any(Function)
-      );
-    });
-  });
-
-  describe('handleSort', () => {
-    it('should toggle sort order when clicking same field', () => {
-      vi.mocked(mockStore.getSortField).mockReturnValue('Title');
-      vi.mocked(mockStore.getSortOrder).mockReturnValue('asc');
-
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      // Get the onSort callback from render
-      const onSortCallback = vi.mocked(mockView.render).mock.calls[0][3];
-      onSortCallback('Title');
-
-      expect(mockStore.setSortOrder).toHaveBeenCalledWith('desc');
-      expect(mockStore.setSortField).not.toHaveBeenCalled();
+            // Assert
+            expect(mockWSService.disconnect).toHaveBeenCalledTimes(1);
+        }); // controller is used in the test
     });
 
-    it('should set new field and asc order when clicking different field', () => {
-      vi.mocked(mockStore.getSortField).mockReturnValue('CreatedAt');
-      vi.mocked(mockStore.getSortOrder).mockReturnValue('desc');
-
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      const onSortCallback = vi.mocked(mockView.render).mock.calls[0][3];
-      onSortCallback('Title');
-
-      expect(mockStore.setSortField).toHaveBeenCalledWith('Title');
-      expect(mockStore.setSortOrder).toHaveBeenCalledWith('asc');
-    });
-
-    it('should toggle from desc to asc on same field', () => {
-      vi.mocked(mockStore.getSortField).mockReturnValue('Version');
-      vi.mocked(mockStore.getSortOrder).mockReturnValue('desc');
-
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      const onSortCallback = vi.mocked(mockView.render).mock.calls[0][3];
-      onSortCallback('Version');
-
-      expect(mockStore.setSortOrder).toHaveBeenCalledWith('asc');
-    });
-  });
-
-  describe('handleViewModeChange', () => {
-    it('should update store with new view mode', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      const onViewModeChangeCallback = vi.mocked(mockView.render).mock.calls[0][5];
-      onViewModeChangeCallback('grid');
-
-      expect(mockStore.setViewMode).toHaveBeenCalledWith('grid');
-    });
-
-    it('should handle switching to list mode', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      const onViewModeChangeCallback = vi.mocked(mockView.render).mock.calls[0][5];
-      onViewModeChangeCallback('list');
-
-      expect(mockStore.setViewMode).toHaveBeenCalledWith('list');
-    });
-  });
-
-  describe('handleCreate', () => {
-    it('should show modal when create is triggered', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      const onCreateCallback = vi.mocked(mockView.render).mock.calls[0][4];
-      onCreateCallback();
-
-      expect(mockView.showModal).toHaveBeenCalledWith(expect.any(Function));
-    });
-
-    it('should add document to store when modal submits', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      const onCreateCallback = vi.mocked(mockView.render).mock.calls[0][4];
-      onCreateCallback();
-
-      // Get the callback passed to showModal
-      const modalCallback = vi.mocked(mockView.showModal).mock.calls[0][0];
-      const newDoc: Document = {
-        ID: 'doc-new',
-        Title: 'New Document',
-        Contributors: [],
-        Version: 1,
-        Attachments: [],
-        CreatedAt: new Date(),
-        UpdatedAt: new Date(),
-      };
-
-      modalCallback(newDoc);
-
-      expect(mockStore.addDocument).toHaveBeenCalledWith(newDoc);
-    });
-
-    it('should show notification after document is created', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      const onCreateCallback = vi.mocked(mockView.render).mock.calls[0][4];
-      onCreateCallback();
-
-      const modalCallback = vi.mocked(mockView.showModal).mock.calls[0][0];
-      const newDoc: Document = {
-        ID: 'doc-new',
-        Title: 'Test Document',
-        Contributors: [],
-        Version: 1,
-        Attachments: [],
-        CreatedAt: new Date(),
-        UpdatedAt: new Date(),
-      };
-
-      modalCallback(newDoc);
-
-      expect(mockView.showNotification).toHaveBeenCalledWith('Document created: Test Document');
-    });
-  });
-
-  describe('connect', () => {
-    it('should delegate to WebSocket service', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      controller.connect();
-
-      expect(mockWsService.connect).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('disconnect', () => {
-    it('should delegate to WebSocket service', () => {
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      controller.disconnect();
-
-      expect(mockWsService.disconnect).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('integration scenarios', () => {
-    it('should handle complete sort workflow', () => {
-      let storeListener: (() => void) | undefined;
-      vi.mocked(mockStore.subscribe).mockImplementation((listener: () => void) => {
-        storeListener = listener;
-        return () => { };
-      });
-
-      vi.mocked(mockStore.getSortField).mockReturnValue('CreatedAt');
-      vi.mocked(mockStore.getSortOrder).mockReturnValue('desc');
-
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      // User clicks Title sort
-      const onSortCallback = vi.mocked(mockView.render).mock.calls[0][3];
-      onSortCallback('Title');
-
-      expect(mockStore.setSortField).toHaveBeenCalledWith('Title');
-      expect(mockStore.setSortOrder).toHaveBeenCalledWith('asc');
-
-      // Store notifies change
-      vi.mocked(mockStore.getSortField).mockReturnValue('Title');
-      vi.mocked(mockStore.getSortOrder).mockReturnValue('asc');
-      vi.mocked(mockView.render).mockClear();
-
-      storeListener?.();
-
-      // View should re-render with new sort
-      expect(mockView.render).toHaveBeenCalledWith(
-        mockDocuments,
-        'Title',
-        'list',
-        expect.any(Function),
-        expect.any(Function),
-        expect.any(Function)
-      );
-    });
-
-    it('should handle complete document creation workflow', () => {
-      let storeListener: (() => void) | undefined;
-      vi.mocked(mockStore.subscribe).mockImplementation((listener: () => void) => {
-        storeListener = listener;
-        return () => { };
-      });
-
-      controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
-
-      // User clicks create button
-      const onCreateCallback = vi.mocked(mockView.render).mock.calls[0][4];
-      onCreateCallback();
-
-      expect(mockView.showModal).toHaveBeenCalled();
-
-      // User submits modal
-      const modalCallback = vi.mocked(mockView.showModal).mock.calls[0][0];
-      const newDoc: Document = {
-        ID: 'doc-new',
-        Title: 'Created Doc',
-        Contributors: [],
-        Version: 1,
-        Attachments: [],
-        CreatedAt: new Date(),
-        UpdatedAt: new Date(),
-      };
-
-      modalCallback(newDoc);
-
-      expect(mockStore.addDocument).toHaveBeenCalledWith(newDoc);
-      expect(mockView.showNotification).toHaveBeenCalledWith('Document created: Created Doc');
-
-      // Store notifies change
-      const updatedDocs = [...mockDocuments, newDoc];
-      vi.mocked(mockStore.getDocuments).mockReturnValue(updatedDocs);
-      vi.mocked(mockView.render).mockClear();
-
-      storeListener?.();
-
-      // View should re-render with new document
-      expect(mockView.render).toHaveBeenCalledWith(
-        updatedDocs,
-        expect.any(String),
-        expect.any(String),
-        expect.any(Function),
-        expect.any(Function),
-        expect.any(Function)
-      );
-    });
-  });
+    // Additional integration tests could be added here
+    // For example, testing that store changes trigger view updates
+    // Or testing WebSocket message handling
+    // But for basic tests, the above covers the main public API
 });

@@ -1,8 +1,8 @@
 export class NotificationComponent {
-  private notificationCount: number = 0;
+    private notificationCount: number = 0;
 
-  render(): string {
-    return `
+    render(): string {
+        return `
       <div id="notification" class="notification-container hidden">
         <div class="notification-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -14,26 +14,26 @@ export class NotificationComponent {
         <span class="notification-text" id="notificationText"></span>
       </div>
     `;
-  }
-
-  show(container: HTMLElement, message: string): void {
-    this.notificationCount++;
-
-    const notification = container.querySelector('#notification');
-    const notificationText = container.querySelector('#notificationText');
-    const notificationBadge = container.querySelector('#notificationBadge');
-
-    if (notification && notificationText && notificationBadge) {
-      notificationText.textContent = message;
-      notificationBadge.textContent = this.notificationCount.toString();
-
-      notification.classList.remove('hidden');
-      notification.classList.add('show');
-
-      setTimeout(() => {
-        notification.classList.remove('show');
-        notification.classList.add('hidden');
-      }, 4000);
     }
-  }
+
+    show(container: HTMLElement, message: string): void {
+        this.notificationCount++;
+
+        const notification = container.querySelector('#notification');
+        const notificationText = container.querySelector('#notificationText');
+        const notificationBadge = container.querySelector('#notificationBadge');
+
+        if (notification && notificationText && notificationBadge) {
+            notificationText.textContent = message;
+            notificationBadge.textContent = this.notificationCount.toString();
+
+            notification.classList.remove('hidden');
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                notification.classList.add('hidden');
+            }, 4000);
+        }
+    }
 }
