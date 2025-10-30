@@ -3,21 +3,22 @@ import { DocumentController } from './documentController';
 import { Document, SortField } from '../models/document';
 import { Store, ViewMode } from '../store/store';
 import { DocumentView } from '../views/documentView';
-import { WebSocketService } from '../services/webSocketService';
+import { SortingService } from '../services/sortingService';
+import { NotificationService } from '../services/notificationService';
+import { WebSocketManager } from '../services/webSocketManager';
 
 // Mock dependencies
 vi.mock('../store/store');
 vi.mock('../views/documentView');
-vi.mock('../services/webSocketService');
-vi.mock('../utils/documentUtils', () => ({
-  DocumentMapper: {
-    fromSocketNotification: vi.fn(),
-  },
-}));
+vi.mock('../services/sortingService');
+vi.mock('../services/notificationService');
+vi.mock('../services/webSocketManager');
 
 const MockedStore = vi.mocked(Store);
 const MockedDocumentView = vi.mocked(DocumentView);
-const MockedWebSocketService = vi.mocked(WebSocketService);
+const MockedSortingService = vi.mocked(SortingService);
+const MockedNotificationService = vi.mocked(NotificationService);
+const MockedWebSocketManager = vi.mocked(WebSocketManager);
 
 interface MockStore {
   subscribe: MockedFunction<(listener: () => void) => () => void>;
@@ -41,15 +42,33 @@ interface MockView {
   showModal: MockedFunction<(onSubmit: (doc: Document) => void) => void>;
 }
 
-interface MockWSService {
+interface MockWSManager {
   connect: MockedFunction<() => void>;
   disconnect: MockedFunction<() => void>;
+}
+
+interface MockSortingService {
+  toggleSort: MockedFunction<
+    (
+      currentField: SortField,
+      currentOrder: 'asc' | 'desc',
+      newField: SortField
+    ) => { field: SortField; order: 'asc' | 'desc' }
+  >;
+}
+
+interface MockNotificationService {
+  notifyDocumentCreated: MockedFunction<(document: Document) => void>;
+  notifyDocumentReceived: MockedFunction<(document: Document) => void>;
+  notify: MockedFunction<(message: string) => void>;
 }
 
 describe('DocumentController', () => {
   let mockStore: MockStore;
   let mockView: MockView;
-  let mockWSService: MockWSService;
+  let mockWSManager: MockWSManager;
+  let mockSortingService: MockSortingService;
+  let mockNotificationService: MockNotificationService;
   let containerId: string;
 
   beforeEach(() => {
@@ -69,19 +88,35 @@ describe('DocumentController', () => {
       showModal: vi.fn(),
     };
 
-    mockWSService = {
+    mockWSManager = {
       connect: vi.fn(),
       disconnect: vi.fn(),
+    };
+
+    mockSortingService = {
+      toggleSort: vi.fn(),
+    };
+
+    mockNotificationService = {
+      notifyDocumentCreated: vi.fn(),
+      notifyDocumentReceived: vi.fn(),
+      notify: vi.fn(),
     };
 
     containerId = 'test-container';
 
     MockedStore.getInstance.mockReturnValue(mockStore as unknown as Store);
-    MockedDocumentView.mockImplementation(function mockDocumentView() {
-      return mockView as MockView;
+    MockedDocumentView.mockImplementation(function (this: any) {
+      return mockView as unknown as DocumentView;
     });
-    MockedWebSocketService.mockImplementation(function mockWebSocketService() {
-      return mockWSService as MockWSService;
+    MockedSortingService.mockImplementation(function (this: any) {
+      return mockSortingService as unknown as SortingService;
+    });
+    MockedNotificationService.mockImplementation(function (this: any) {
+      return mockNotificationService as unknown as NotificationService;
+    });
+    MockedWebSocketManager.mockImplementation(function (this: any) {
+      return mockWSManager as unknown as WebSocketManager;
     });
   });
 
@@ -96,8 +131,10 @@ describe('DocumentController', () => {
 
       // Assert
       expect(MockedStore.getInstance).toHaveBeenCalledTimes(1);
-      expect(MockedDocumentView).toHaveBeenCalledTimes(1); // Changed toTimesCalledWith to toHaveBeenCalledTimes
-      expect(MockedWebSocketService).toHaveBeenCalledTimes(1);
+      expect(MockedDocumentView).toHaveBeenCalledTimes(1);
+      expect(MockedSortingService).toHaveBeenCalledTimes(1);
+      expect(MockedNotificationService).toHaveBeenCalledTimes(1);
+      expect(MockedWebSocketManager).toHaveBeenCalledTimes(1);
       expect(mockStore.subscribe).toHaveBeenCalledTimes(1);
     });
 
@@ -105,20 +142,26 @@ describe('DocumentController', () => {
       // Arrange
       const customStore = { ...mockStore };
       const customView = { ...mockView };
-      const customWS = { ...mockWSService };
+      const customSorting = { ...mockSortingService };
+      const customNotification = { ...mockNotificationService };
+      const customWS = { ...mockWSManager };
 
       // Act
       new DocumentController(
         containerId,
         customStore as unknown as Store,
         customView as unknown as DocumentView,
-        customWS as unknown as WebSocketService
+        customSorting as unknown as SortingService,
+        customNotification as unknown as NotificationService,
+        customWS as unknown as WebSocketManager
       );
 
       // Assert
       expect(MockedStore.getInstance).not.toHaveBeenCalled();
       expect(MockedDocumentView).not.toHaveBeenCalled();
-      expect(MockedWebSocketService).not.toHaveBeenCalled();
+      expect(MockedSortingService).not.toHaveBeenCalled();
+      expect(MockedNotificationService).not.toHaveBeenCalled();
+      expect(MockedWebSocketManager).not.toHaveBeenCalled();
       expect(customStore.subscribe).toHaveBeenCalledTimes(1);
     });
 
@@ -144,7 +187,7 @@ describe('DocumentController', () => {
   });
 
   describe('connect', () => {
-    it('should call wsService connect method', () => {
+    it('should call wsManager connect method', () => {
       // Arrange
       const controller = new DocumentController(containerId);
 
@@ -152,12 +195,12 @@ describe('DocumentController', () => {
       controller.connect();
 
       // Assert
-      expect(mockWSService.connect).toHaveBeenCalledTimes(1);
-    }); // controller is used in the test
+      expect(mockWSManager.connect).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('disconnect', () => {
-    it('should call wsService disconnect method', () => {
+    it('should call wsManager disconnect method', () => {
       // Arrange
       const controller = new DocumentController(containerId);
 
@@ -165,8 +208,8 @@ describe('DocumentController', () => {
       controller.disconnect();
 
       // Assert
-      expect(mockWSService.disconnect).toHaveBeenCalledTimes(1);
-    }); // controller is used in the test
+      expect(mockWSManager.disconnect).toHaveBeenCalledTimes(1);
+    });
   });
 
   // Additional integration tests could be added here

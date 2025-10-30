@@ -1,25 +1,35 @@
 import { Document, SortField } from '../models/document';
 import { Store } from '../store/store';
 import { DocumentView } from '../views/documentView';
-import { WebSocketService } from '../services/webSocketService';
-import { SocketsNotification } from '../models/sockets';
-import { DocumentMapper } from '../utils/documentUtils';
+import { SortingService } from '../services/sortingService';
+import { NotificationService } from '../services/notificationService';
+import { WebSocketManager } from '../services/webSocketManager';
 
+/**
+ * Main controller coordinating document management
+ * Delegates specific responsibilities to specialized services
+ */
 export class DocumentController {
   private store: Store;
   private view: DocumentView;
-  private wsService: WebSocketService;
+  private sortingService: SortingService;
+  private notificationService: NotificationService;
+  private wsManager: WebSocketManager;
 
   constructor(
     containerId: string,
     store?: Store,
     view?: DocumentView,
-    wsService?: WebSocketService
+    sortingService?: SortingService,
+    notificationService?: NotificationService,
+    wsManager?: WebSocketManager
   ) {
     // Dependency Injection with defaults for backward compatibility
     this.store = store || Store.getInstance();
     this.view = view || new DocumentView(containerId);
-    this.wsService = wsService || new WebSocketService(this.handleNewDocument.bind(this));
+    this.sortingService = sortingService || new SortingService();
+    this.notificationService = notificationService || new NotificationService(this.view);
+    this.wsManager = wsManager || new WebSocketManager(this.handleNewDocument.bind(this));
 
     this.store.subscribe(() => this.updateView());
     this.updateView();
@@ -44,12 +54,9 @@ export class DocumentController {
     const currentField = this.store.getSortField();
     const currentOrder = this.store.getSortOrder();
 
-    if (field === currentField) {
-      this.store.setSortOrder(currentOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      this.store.setSortField(field);
-      this.store.setSortOrder('asc');
-    }
+    const result = this.sortingService.toggleSort(currentField, currentOrder, field);
+    this.store.setSortField(result.field);
+    this.store.setSortOrder(result.order);
   }
 
   private handleViewModeChange(mode: 'list' | 'grid'): void {
@@ -59,21 +66,20 @@ export class DocumentController {
   private handleCreate(): void {
     this.view.showModal((document: Document) => {
       this.store.addDocument(document);
-      this.view.showNotification(`Document created: ${document.Title}`);
+      this.notificationService.notifyDocumentCreated(document);
     });
   }
 
-  private handleNewDocument(notification: SocketsNotification): void {
-    const document = DocumentMapper.fromSocketNotification(notification);
+  private handleNewDocument(document: Document): void {
     this.store.addDocument(document);
-    this.view.showNotification(`New document added: ${document.Title}`);
+    this.notificationService.notifyDocumentReceived(document);
   }
 
   connect(): void {
-    this.wsService.connect();
+    this.wsManager.connect();
   }
 
   disconnect(): void {
-    this.wsService.disconnect();
+    this.wsManager.disconnect();
   }
 }
