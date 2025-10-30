@@ -13,22 +13,22 @@ const controller = new DocumentController('document-container');
 
 // Fetch documents from API (works offline with localStorage)
 apiService
-    .fetchDocuments()
-    .then(documents => {
-        const store = Store.getInstance();
-        // Only add documents if localStorage is empty (first load)
-        if (store.getDocuments().length === 0) {
-            documents.forEach(doc => store.addDocument(doc));
-        }
-        controller.connect();
-    })
-    .catch(error => {
-        console.warn('Server unavailable, running in offline mode:', error);
-        // App continues to work with localStorage data
-        controller.connect(); // Still attempt WebSocket connection
-    });
+  .fetchDocuments()
+  .then(documents => {
+    const store = Store.getInstance();
+    // Only add documents if localStorage is empty (first load)
+    if (store.getDocuments().length === 0) {
+      documents.forEach(doc => store.addDocument(doc));
+    }
+    controller.connect();
+  })
+  .catch(error => {
+    console.warn('Server unavailable, running in offline mode:', error);
+    // App continues to work with localStorage data
+    controller.connect(); // Still attempt WebSocket connection
+  });
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
-    controller.disconnect();
+  controller.disconnect();
 });

@@ -2,8 +2,8 @@ import { Document } from '../../models/document';
 import { escapeHtml } from '../../utils/htmlUtils';
 
 export class CardComponent {
-    render(doc: Document): string {
-        return `
+  render(doc: Document): string {
+    return `
       <div class="document-card">
         <div class="card-title">
           <h3>${escapeHtml(doc.Title)}</h3>
@@ -12,7 +12,7 @@ export class CardComponent {
         
         <div class="card-section">
           ${doc.Contributors.map(
-              c => `
+            c => `
             <div class="card-item">${escapeHtml(c.Name)}</div>
           `
           ).join('')}
@@ -20,16 +20,16 @@ export class CardComponent {
         
         <div class="card-section card-attachments">
           ${
-              doc.Attachments.length > 0
-                  ? doc.Attachments.map(
-                        a => `
+            doc.Attachments.length > 0
+              ? doc.Attachments.map(
+                  a => `
               <div class="card-item">${escapeHtml(a)}</div>
             `
-                    ).join('')
-                  : ''
+                ).join('')
+              : ''
           }
         </div>
       </div>
     `;
-    }
+  }
 }
