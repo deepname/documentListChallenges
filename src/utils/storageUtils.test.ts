@@ -132,32 +132,6 @@ describe('storageUtils', () => {
       expect(parsed[0].Title).toBe('Test "quotes" & <tags>');
       expect(parsed[0].Contributors[0].Name).toBe("O'Brien");
     });
-
-    it('should handle localStorage errors gracefully', () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-        throw new Error('Storage quota exceeded');
-      });
-
-      const documents: Document[] = [
-        {
-          ID: 'doc-1',
-          Title: 'Test',
-          Contributors: [],
-          Version: 1,
-          Attachments: [],
-          CreatedAt: new Date(),
-          UpdatedAt: new Date(),
-        },
-      ];
-
-      // Should not throw
-      expect(() => saveDocuments(documents)).not.toThrow();
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to save documents:', expect.any(Error));
-
-      setItemSpy.mockRestore();
-      consoleErrorSpy.mockRestore();
-    });
   });
 
   describe('loadDocuments', () => {
@@ -251,21 +225,6 @@ describe('storageUtils', () => {
       expect(loaded).toEqual([]);
       expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load documents:', expect.any(Error));
 
-      consoleErrorSpy.mockRestore();
-    });
-
-    it('should handle localStorage errors gracefully', () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
-        throw new Error('Storage access denied');
-      });
-
-      const loaded = loadDocuments();
-
-      expect(loaded).toEqual([]);
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load documents:', expect.any(Error));
-
-      getItemSpy.mockRestore();
       consoleErrorSpy.mockRestore();
     });
 

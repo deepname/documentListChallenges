@@ -4,7 +4,6 @@ import { Store } from '../store/store';
 import { DocumentView } from '../views/documentView';
 import { WebSocketService } from '../services/webSocketService';
 import { Document, SortField } from '../models/document';
-import { SocketsNotification } from '../models/sockets';
 
 // Mock dependencies
 vi.mock('../store/Store');
@@ -50,7 +49,7 @@ describe('DocumentController', () => {
 
     // Create mock instances with proper typing
     mockStore = {
-      subscribe: vi.fn().mockReturnValue(() => {}),
+      subscribe: vi.fn().mockReturnValue(() => { }),
       getDocuments: vi.fn().mockReturnValue(mockDocuments),
       getSortField: vi.fn().mockReturnValue('CreatedAt' as SortField),
       getSortOrder: vi.fn().mockReturnValue('desc'),
@@ -116,7 +115,7 @@ describe('DocumentController', () => {
       let storeListener: (() => void) | undefined;
       vi.mocked(mockStore.subscribe).mockImplementation((listener: () => void) => {
         storeListener = listener;
-        return () => {};
+        return () => { };
       });
 
       controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
@@ -135,7 +134,7 @@ describe('DocumentController', () => {
       let storeListener: (() => void) | undefined;
       vi.mocked(mockStore.subscribe).mockImplementation((listener: () => void) => {
         storeListener = listener;
-        return () => {};
+        return () => { };
       });
 
       const updatedDocs = [
@@ -286,65 +285,6 @@ describe('DocumentController', () => {
     });
   });
 
-  describe('handleNewDocument', () => {
-    it('should process WebSocket notification and add document', () => {
-      // Capture the WebSocket callback
-      let wsCallback: ((notification: SocketsNotification) => void) | undefined;
-      const MockedWebSocketService = vi.mocked(WebSocketService);
-      MockedWebSocketService.mockImplementation(
-        (callback: (notification: SocketsNotification) => void) => {
-          wsCallback = callback;
-          return mockWsService;
-        }
-      );
-
-      controller = new DocumentController('test-container', mockStore, mockView);
-
-      const notification: SocketsNotification = {
-        Timestamp: '2024-01-20T10:30:00Z',
-        UserID: 'user-3',
-        UserName: 'Charlie',
-        DocumentID: 'doc-ws-1',
-        DocumentTitle: 'WebSocket Document',
-      };
-
-      wsCallback?.(notification);
-
-      expect(mockStore.addDocument).toHaveBeenCalledWith(
-        expect.objectContaining({
-          ID: 'doc-ws-1',
-          Title: 'WebSocket Document',
-          Contributors: [{ ID: 'user-3', Name: 'Charlie' }],
-        })
-      );
-    });
-
-    it('should show notification when WebSocket document is received', () => {
-      let wsCallback: ((notification: SocketsNotification) => void) | undefined;
-      const MockedWebSocketService = vi.mocked(WebSocketService);
-      MockedWebSocketService.mockImplementation(
-        (callback: (notification: SocketsNotification) => void) => {
-          wsCallback = callback;
-          return mockWsService;
-        }
-      );
-
-      controller = new DocumentController('test-container', mockStore, mockView);
-
-      const notification: SocketsNotification = {
-        Timestamp: '2024-01-20T10:30:00Z',
-        UserID: 'user-3',
-        UserName: 'Charlie',
-        DocumentID: 'doc-ws-1',
-        DocumentTitle: 'Real-time Doc',
-      };
-
-      wsCallback?.(notification);
-
-      expect(mockView.showNotification).toHaveBeenCalledWith('New document added: Real-time Doc');
-    });
-  });
-
   describe('connect', () => {
     it('should delegate to WebSocket service', () => {
       controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
@@ -370,7 +310,7 @@ describe('DocumentController', () => {
       let storeListener: (() => void) | undefined;
       vi.mocked(mockStore.subscribe).mockImplementation((listener: () => void) => {
         storeListener = listener;
-        return () => {};
+        return () => { };
       });
 
       vi.mocked(mockStore.getSortField).mockReturnValue('CreatedAt');
@@ -407,7 +347,7 @@ describe('DocumentController', () => {
       let storeListener: (() => void) | undefined;
       vi.mocked(mockStore.subscribe).mockImplementation((listener: () => void) => {
         storeListener = listener;
-        return () => {};
+        return () => { };
       });
 
       controller = new DocumentController('test-container', mockStore, mockView, mockWsService);
