@@ -13,7 +13,16 @@
     "plugin:prettier/recommended"
   ],
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": ["error", {
+      "semi": true,
+      "trailingComma": "es5",
+      "singleQuote": true,
+      "printWidth": 100,
+      "tabWidth": 4,
+      "useTabs": false,
+      "arrowParens": "avoid",
+      "endOfLine": "lf"
+    }],
     "@typescript-eslint/no-unused-vars": [
       "error",
       { "argsIgnorePattern": "^_" }
