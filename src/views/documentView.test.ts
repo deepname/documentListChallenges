@@ -2,17 +2,32 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { DocumentView } from './documentView';
 import type { Document } from '../models/document';
 
-vi.mock('./components/cardComponent');
-vi.mock('./components/controlsComponent', () => {
-  return {
-    ControlsComponent: vi.fn().mockImplementation(() => ({
-      render: vi.fn().mockReturnValue('<div class="controls"></div>'),
-      attachListeners: vi.fn().mockReturnValue(() => {}), // Return cleanup function
-    })),
-  };
+vi.mock('./components/cardComponent', () => {
+  const CardComponent = vi.fn();
+  CardComponent.prototype.render = vi.fn().mockReturnValue('<div class="card"></div>');
+  return { CardComponent };
 });
-vi.mock('./components/notificationComponent');
-vi.mock('./components/modalComponent');
+
+vi.mock('./components/controlsComponent', () => {
+  const ControlsComponent = vi.fn();
+  ControlsComponent.prototype.render = vi.fn().mockReturnValue('<div class="controls"></div>');
+  ControlsComponent.prototype.attachListeners = vi.fn().mockReturnValue(() => {}); // Return cleanup function
+  return { ControlsComponent };
+});
+
+vi.mock('./components/notificationComponent', () => {
+  const NotificationComponent = vi.fn();
+  NotificationComponent.prototype.render = vi.fn().mockReturnValue('<div class="notification"></div>');
+  NotificationComponent.prototype.show = vi.fn();
+  return { NotificationComponent };
+});
+
+vi.mock('./components/modalComponent', () => {
+  const ModalComponent = vi.fn();
+  ModalComponent.prototype.render = vi.fn().mockReturnValue('<div class="modal"></div>');
+  ModalComponent.prototype.show = vi.fn();
+  return { ModalComponent };
+});
 vi.mock('../utils/htmlUtils', () => ({
   escapeHtml: (html: string) => html,
 }));

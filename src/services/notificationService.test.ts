@@ -1,21 +1,20 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { NotificationService } from './notificationService';
-import { Document } from '../models/document';
-import { DocumentView } from '../views/documentView';
+import { NotificationService, NotificationDisplayer } from './notificationService';
+import type { Document } from '../models/document';
 
 describe('NotificationService', () => {
-  let mockView: { showNotification: ReturnType<typeof vi.fn> };
+  let mockDisplayer: NotificationDisplayer;
   let notificationService: NotificationService;
   let sampleDocument: Document;
 
   beforeEach(() => {
-    // Arrange - Create mock view
-    mockView = {
+    // Arrange - Create mock notification displayer
+    mockDisplayer = {
       showNotification: vi.fn(),
     };
 
-    // Arrange - Create service instance with mock view
-    notificationService = new NotificationService(mockView as unknown as DocumentView);
+    // Arrange - Create service instance with mock displayer
+    notificationService = new NotificationService(mockDisplayer);
 
     // Arrange - Create sample document for testing
     sampleDocument = {
@@ -41,8 +40,8 @@ describe('NotificationService', () => {
       notificationService.notifyDocumentCreated(sampleDocument);
 
       // Assert
-      expect(mockView.showNotification).toHaveBeenCalledTimes(1);
-      expect(mockView.showNotification).toHaveBeenCalledWith(expectedMessage);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledTimes(1);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledWith(expectedMessage);
     });
 
     it('should handle document with special characters in title', () => {
@@ -57,7 +56,7 @@ describe('NotificationService', () => {
       notificationService.notifyDocumentCreated(docWithSpecialChars);
 
       // Assert
-      expect(mockView.showNotification).toHaveBeenCalledWith(expectedMessage);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledWith(expectedMessage);
     });
 
     it('should handle document with empty title', () => {
@@ -72,7 +71,7 @@ describe('NotificationService', () => {
       notificationService.notifyDocumentCreated(docWithEmptyTitle);
 
       // Assert
-      expect(mockView.showNotification).toHaveBeenCalledWith(expectedMessage);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledWith(expectedMessage);
     });
   });
 
@@ -85,8 +84,8 @@ describe('NotificationService', () => {
       notificationService.notifyDocumentReceived(sampleDocument);
 
       // Assert
-      expect(mockView.showNotification).toHaveBeenCalledTimes(1);
-      expect(mockView.showNotification).toHaveBeenCalledWith(expectedMessage);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledTimes(1);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledWith(expectedMessage);
     });
 
     it('should handle document with long title', () => {
@@ -102,7 +101,7 @@ describe('NotificationService', () => {
       notificationService.notifyDocumentReceived(docWithLongTitle);
 
       // Assert
-      expect(mockView.showNotification).toHaveBeenCalledWith(expectedMessage);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledWith(expectedMessage);
     });
 
     it('should handle document with unicode characters in title', () => {
@@ -117,7 +116,7 @@ describe('NotificationService', () => {
       notificationService.notifyDocumentReceived(docWithUnicode);
 
       // Assert
-      expect(mockView.showNotification).toHaveBeenCalledWith(expectedMessage);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledWith(expectedMessage);
     });
   });
 
@@ -130,8 +129,8 @@ describe('NotificationService', () => {
       notificationService.notify(customMessage);
 
       // Assert
-      expect(mockView.showNotification).toHaveBeenCalledTimes(1);
-      expect(mockView.showNotification).toHaveBeenCalledWith(customMessage);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledTimes(1);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledWith(customMessage);
     });
 
     it('should handle empty message', () => {
@@ -142,7 +141,7 @@ describe('NotificationService', () => {
       notificationService.notify(emptyMessage);
 
       // Assert
-      expect(mockView.showNotification).toHaveBeenCalledWith(emptyMessage);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledWith(emptyMessage);
     });
 
     it('should handle message with special characters', () => {
@@ -153,7 +152,7 @@ describe('NotificationService', () => {
       notificationService.notify(specialMessage);
 
       // Assert
-      expect(mockView.showNotification).toHaveBeenCalledWith(specialMessage);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledWith(specialMessage);
     });
 
     it('should handle multiline message', () => {
@@ -164,14 +163,14 @@ describe('NotificationService', () => {
       notificationService.notify(multilineMessage);
 
       // Assert
-      expect(mockView.showNotification).toHaveBeenCalledWith(multilineMessage);
+      expect(mockDisplayer.showNotification).toHaveBeenCalledWith(multilineMessage);
     });
   });
 
   describe('constructor', () => {
     it('should create instance with provided view', () => {
       // Arrange & Act
-      const service = new NotificationService(mockView as unknown as DocumentView);
+      const service = new NotificationService(mockDisplayer as unknown as NotificationDisplayer);
 
       // Assert
       expect(service).toBeInstanceOf(NotificationService);

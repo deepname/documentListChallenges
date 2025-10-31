@@ -1,5 +1,4 @@
-import { Document, SortField } from '../models/document';
-import { ViewMode } from '../store/store';
+import { Document, SortField, ViewMode } from '../models/document';
 import { CardComponent } from './components/cardComponent';
 import { ControlsComponent } from './components/controlsComponent';
 import { NotificationComponent } from './components/notificationComponent';

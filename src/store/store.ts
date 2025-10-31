@@ -1,8 +1,10 @@
-import { Document, SortField, SortOrder } from '../models/document';
+import { Document, SortField, SortOrder, ViewMode } from '../models/document';
 import { saveDocuments, loadDocuments } from '../utils/storageUtils';
 
+// Re-export for backward compatibility
+export type { ViewMode };
+
 type Listener = () => void;
-export type ViewMode = 'list' | 'grid';
 
 export class Store {
   private static instance: Store;

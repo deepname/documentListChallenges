@@ -15,3 +15,4 @@ export interface Document {
 
 export type SortField = 'Title' | 'Version' | 'CreatedAt';
 export type SortOrder = 'asc' | 'desc';
+export type ViewMode = 'list' | 'grid';
