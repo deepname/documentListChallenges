@@ -34,12 +34,18 @@ A modern single-page application built with **Vanilla TypeScript**, **Vite**, st
 - npm or yarn
 - Chrome 130+ (last 2 versions recommended)
 
-### Installation
+#### Commands
+
+##### Install dependencies
 
 ```bash
 # Install dependencies (includes automated browser targeting)
 npm install
+```
 
+##### Run development
+
+```bash
 # Start development server
 npm run dev
 
@@ -48,7 +54,11 @@ npm run build
 
 # Preview production build
 npm run preview
+```
 
+##### Code Quality
+
+```bash
 # Lint code
 npm run lint
 
