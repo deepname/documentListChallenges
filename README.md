@@ -1,6 +1,6 @@
 # Document Manager - MVC Application
 
-A modern single-page application built with **Vanilla TypeScript**, **Vite**, strict **MVC architecture** and the **KISS** and **DRY** principles of programming.
+A modern single-page application built with **Vanilla TypeScript**, **Vite**, strict **MVC architecture** and the **KISS** and **DRY** principles of programming. The **AAA** (Arrange, Act, Assert) testing pattern was applied.
 
 ## 🏗️ Architecture
 
@@ -72,6 +72,18 @@ npm run test:coverage
 
 # UnitTest with run
 npm run test:run
+
+# Run all E2E tests (headless)
+npm run test:e2e
+
+# Run with UI mode (interactive)
+npm run test:e2e:ui
+
+# Run with browser visible
+npm run test:e2e:headed
+
+# Debug mode
+npm run test:e2e:debug
 ```
 
 The application will be available at `http://localhost:3000`
@@ -79,6 +91,10 @@ The application will be available at `http://localhost:3000`
 ## 📁 Project Structure
 
 ```text
+e2e/
+├── helpers/
+│   └── page-objects.ts    # Reusable page object models (DRY)
+└── *.spec.ts              # Test specifications
 src/
 ├── controllers/
 │   └── DocumentController.ts # Business logic
@@ -231,7 +247,7 @@ The project uses **ESLint** and **Prettier** to maintain code quality and consis
 
 We use the AAA pattern, or Arrange, Act, Assert, is a design pattern for writing unit tests that divides each test into three clear and sequential phases. In the Arrange phase, the data and objects needed for the test are set up; in the Act phase, the code under test is executed; and in the Assert phase, it is verified that the result is as expected. This pattern promotes readability, maintainability, and clarity in test writing.
 
-#### Dependencies
+#### Dependencies Unit test
 
 - vitest/coverage-v8: A plugin for Vitest that generates code coverage reports using V8. It shows what percentage of the code is covered by tests.
 
@@ -241,12 +257,21 @@ We use the AAA pattern, or Arrange, Act, Assert, is a design pattern for writing
 
 - vitest: A modern and fast testing framework specifically designed for Vite projects. It runs unit and integration tests.
 
-## 🌐 Browser Compatibility
+### End-to-End Tests
+
+E2E tests using Playwright.
+
+#### Dependencies e2e
+
+- @playwright/test: A testing framework for web applications that provides a set of tools for automating browser interactions and testing web applications.
+
+### Browser Compatibility
 
 This application is optimized for the **last 2 versions of Chrome**.
 
 ***browserslist***: Defines which browsers the project should support. It is used to configure build tools such as Babel or PostCSS.
 ***browserslist-to-esbuild***: Bridges the Browserslist and esbuild (the bundler used by Vite) to optimize the build for the target browsers.
+
 
 ## 📝 License
 
