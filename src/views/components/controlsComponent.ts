@@ -41,18 +41,37 @@ export class ControlsComponent {
     container: HTMLElement,
     onSort: (field: SortField) => void,
     onViewModeChange: (mode: ViewMode) => void
-  ): void {
-    const sortDropdown = container.querySelector('#sortDropdown') as HTMLSelectElement;
-    sortDropdown?.addEventListener('change', () => {
-      onSort(sortDropdown.value as SortField);
-    });
+  ): () => void {
+    const cleanupFunctions: (() => void)[] = [];
 
+    // Sort dropdown listener
+    const sortDropdown = container.querySelector('#sortDropdown') as HTMLSelectElement;
+    if (sortDropdown) {
+      const sortHandler = () => {
+        onSort(sortDropdown.value as SortField);
+      };
+      sortDropdown.addEventListener('change', sortHandler);
+      cleanupFunctions.push(() => {
+        sortDropdown.removeEventListener('change', sortHandler);
+      });
+    }
+
+    // View mode buttons listeners
     const viewButtons = container.querySelectorAll('.view-btn');
     viewButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
+      const clickHandler = () => {
         const mode = (btn as HTMLElement).dataset.view as ViewMode;
         onViewModeChange(mode);
+      };
+      btn.addEventListener('click', clickHandler);
+      cleanupFunctions.push(() => {
+        btn.removeEventListener('click', clickHandler);
       });
     });
+
+    // Return cleanup function that removes all listeners
+    return () => {
+      cleanupFunctions.forEach(cleanup => cleanup());
+    };
   }
 }

@@ -372,4 +372,57 @@ describe('ControlsComponent', () => {
       expect(() => component.attachListeners(emptyContainer, vi.fn(), vi.fn())).not.toThrow();
     });
   });
+
+  describe('cleanup', () => {
+    it('should return cleanup function', () => {
+      // Arrange
+      const html = component.render('Title', 'list');
+      container.innerHTML = html;
+      const onSort = vi.fn();
+      const onViewModeChange = vi.fn();
+
+      // Act
+      const cleanup = component.attachListeners(container, onSort, onViewModeChange);
+
+      // Assert
+      expect(cleanup).toBeTypeOf('function');
+    });
+
+    it('should remove event listeners when cleanup is called', () => {
+      // Arrange
+      const html = component.render('Title', 'list');
+      container.innerHTML = html;
+      const onSort = vi.fn();
+      const onViewModeChange = vi.fn();
+
+      // Act
+      const cleanup = component.attachListeners(container, onSort, onViewModeChange);
+      cleanup(); // Clean up listeners
+
+      const dropdown = container.querySelector('#sortDropdown') as HTMLSelectElement;
+      dropdown.value = 'Version';
+      dropdown.dispatchEvent(new Event('change'));
+
+      // Assert - Callback should not be called after cleanup
+      expect(onSort).not.toHaveBeenCalled();
+    });
+
+    it('should remove all view button listeners when cleanup is called', () => {
+      // Arrange
+      const html = component.render('Title', 'list');
+      container.innerHTML = html;
+      const onSort = vi.fn();
+      const onViewModeChange = vi.fn();
+
+      // Act
+      const cleanup = component.attachListeners(container, onSort, onViewModeChange);
+      cleanup(); // Clean up listeners
+
+      const gridBtn = container.querySelector('[data-view="grid"]') as HTMLElement;
+      gridBtn?.click();
+
+      // Assert - Callback should not be called after cleanup
+      expect(onViewModeChange).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -1,25 +1,24 @@
 import { describe, it, expect } from 'vitest';
-import { DocumentMapper, parseDocumentDates } from './documentUtils';
-import { SocketsNotification } from '../models/sockets';
-import { Document } from '../models/document';
+import { fromSocketNotification, parseDocumentDates } from './documentUtils';
+import type { SocketsNotification } from '../models/sockets';
+import type { Document } from '../models/document';
 
-describe('DocumentMapper', () => {
-  describe('fromSocketNotification', () => {
-    // Fast: Simple transformation without I/O
-    // Independent: No shared state
-    // Repeatable: Same input always produces same output
-    // Self-validating: Clear assertions
-    // Timely: Tests core business logic
-    it('should map socket notification to document with correct fields', () => {
-      const notification: SocketsNotification = {
-        Timestamp: '2024-01-15T10:30:00Z',
-        UserID: 'user-123',
-        UserName: 'John Doe',
-        DocumentID: 'doc-456',
-        DocumentTitle: 'Test Document',
-      };
+describe('fromSocketNotification', () => {
+  // Fast: Simple transformation without I/O
+  // Independent: No shared state
+  // Repeatable: Same input always produces same output
+  // Self-validating: Clear assertions
+  // Timely: Tests core business logic
+  it('should map socket notification to document with correct fields', () => {
+    const notification: SocketsNotification = {
+      Timestamp: '2024-01-15T10:30:00Z',
+      UserID: 'user-123',
+      UserName: 'John Doe',
+      DocumentID: 'doc-456',
+      DocumentTitle: 'Test Document',
+    };
 
-      const result = DocumentMapper.fromSocketNotification(notification);
+    const result = fromSocketNotification(notification);
 
       expect(result.ID).toBe('doc-456');
       expect(result.Title).toBe('Test Document');
@@ -30,54 +29,53 @@ describe('DocumentMapper', () => {
       expect(result.Contributors[0].Name).toBe('John Doe');
     });
 
-    it('should convert timestamp string to Date objects for CreatedAt and UpdatedAt', () => {
-      const notification: SocketsNotification = {
-        Timestamp: '2024-01-15T10:30:00Z',
-        UserID: 'user-123',
-        UserName: 'John Doe',
-        DocumentID: 'doc-456',
-        DocumentTitle: 'Test Document',
-      };
+  it('should convert timestamp string to Date objects for CreatedAt and UpdatedAt', () => {
+    const notification: SocketsNotification = {
+      Timestamp: '2024-01-15T10:30:00Z',
+      UserID: 'user-123',
+      UserName: 'John Doe',
+      DocumentID: 'doc-456',
+      DocumentTitle: 'Test Document',
+    };
 
-      const result = DocumentMapper.fromSocketNotification(notification);
+    const result = fromSocketNotification(notification);
 
-      expect(result.CreatedAt).toBeInstanceOf(Date);
-      expect(result.UpdatedAt).toBeInstanceOf(Date);
-      expect(result.CreatedAt.toISOString()).toBe('2024-01-15T10:30:00.000Z');
-      expect(result.UpdatedAt.toISOString()).toBe('2024-01-15T10:30:00.000Z');
-    });
+    expect(result.CreatedAt).toBeInstanceOf(Date);
+    expect(result.UpdatedAt).toBeInstanceOf(Date);
+    expect(result.CreatedAt.toISOString()).toBe('2024-01-15T10:30:00.000Z');
+    expect(result.UpdatedAt.toISOString()).toBe('2024-01-15T10:30:00.000Z');
+  });
 
-    it('should handle special characters in title and username', () => {
-      const notification: SocketsNotification = {
-        Timestamp: '2024-01-15T10:30:00Z',
-        UserID: 'user-123',
-        UserName: "O'Brien & Co.",
-        DocumentID: 'doc-456',
-        DocumentTitle: '<Script> "Test" & More',
-      };
+  it('should handle special characters in title and username', () => {
+    const notification: SocketsNotification = {
+      Timestamp: '2024-01-15T10:30:00Z',
+      UserID: 'user-123',
+      UserName: "O'Brien & Co.",
+      DocumentID: 'doc-456',
+      DocumentTitle: '<Script> "Test" & More',
+    };
 
-      const result = DocumentMapper.fromSocketNotification(notification);
+    const result = fromSocketNotification(notification);
 
-      expect(result.Title).toBe('<Script> "Test" & More');
-      expect(result.Contributors[0].Name).toBe("O'Brien & Co.");
-    });
+    expect(result.Title).toBe('<Script> "Test" & More');
+    expect(result.Contributors[0].Name).toBe("O'Brien & Co.");
+  });
 
-    it('should handle empty strings in notification fields', () => {
-      const notification: SocketsNotification = {
-        Timestamp: '2024-01-15T10:30:00Z',
-        UserID: '',
-        UserName: '',
-        DocumentID: '',
-        DocumentTitle: '',
-      };
+  it('should handle empty strings in notification fields', () => {
+    const notification: SocketsNotification = {
+      Timestamp: '2024-01-15T10:30:00Z',
+      UserID: '',
+      UserName: '',
+      DocumentID: '',
+      DocumentTitle: '',
+    };
 
-      const result = DocumentMapper.fromSocketNotification(notification);
+    const result = fromSocketNotification(notification);
 
-      expect(result.ID).toBe('');
-      expect(result.Title).toBe('');
-      expect(result.Contributors[0].ID).toBe('');
-      expect(result.Contributors[0].Name).toBe('');
-    });
+    expect(result.ID).toBe('');
+    expect(result.Title).toBe('');
+    expect(result.Contributors[0].ID).toBe('');
+    expect(result.Contributors[0].Name).toBe('');
   });
 });
 

@@ -1,9 +1,16 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { DocumentView } from './documentView';
-import { Document } from '../models/document';
+import type { Document } from '../models/document';
 
 vi.mock('./components/cardComponent');
-vi.mock('./components/controlsComponent');
+vi.mock('./components/controlsComponent', () => {
+  return {
+    ControlsComponent: vi.fn().mockImplementation(() => ({
+      render: vi.fn().mockReturnValue('<div class="controls"></div>'),
+      attachListeners: vi.fn().mockReturnValue(() => {}), // Return cleanup function
+    })),
+  };
+});
 vi.mock('./components/notificationComponent');
 vi.mock('./components/modalComponent');
 vi.mock('../utils/htmlUtils', () => ({
@@ -145,6 +152,26 @@ describe('DocumentView', () => {
 
       // Assert
       expect(onCreate).toHaveBeenCalled();
+    });
+
+    it('should clean up event listeners on re-render to prevent memory leaks', () => {
+      // Arrange
+      const onSort = vi.fn();
+      const onCreate1 = vi.fn();
+      const onCreate2 = vi.fn();
+      const onViewModeChange = vi.fn();
+
+      // Act - First render
+      view.render(mockDocuments, 'Title', 'list', onSort, onCreate1, onViewModeChange);
+
+      // Act - Second render (should clean up first listeners)
+      view.render(mockDocuments, 'Title', 'list', onSort, onCreate2, onViewModeChange);
+      const secondBtn = container.querySelector('#createBtn') as HTMLButtonElement;
+      secondBtn?.click();
+
+      // Assert - Only the second callback should be called
+      expect(onCreate1).not.toHaveBeenCalled();
+      expect(onCreate2).toHaveBeenCalled();
     });
 
     it('should render with different sort fields', () => {

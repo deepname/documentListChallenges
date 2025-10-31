@@ -1,6 +1,6 @@
 import { Document } from '../models/document';
 import { SocketsNotification } from '../models/sockets';
-import { DocumentMapper } from '../utils/documentUtils';
+import { fromSocketNotification } from '../utils/documentUtils';
 import { WebSocketService } from './webSocketService';
 
 /**
@@ -27,7 +27,7 @@ export class WebSocketManager {
    * @param notification - The socket notification received
    */
   private handleNotification(notification: SocketsNotification): void {
-    const document = DocumentMapper.fromSocketNotification(notification);
+    const document = fromSocketNotification(notification);
     this.onDocumentReceived(document);
   }
 

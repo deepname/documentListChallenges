@@ -7,11 +7,11 @@ export class ModalComponent {
 
   render(): string {
     return `
-      <div id="modal" class="modal hidden">
-        <div class="modal-overlay"></div>
+      <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="Add New Document">
+        <div class="modal-overlay" aria-hidden="true"></div>
         <div class="modal-content">
           <div class="modal-header">
-            <h2>Add New Document</h2>
+            <h2 id="Add New Document">Add New Document</h2>
             <button class="modal-close" id="modalClose">&times;</button>
           </div>
           

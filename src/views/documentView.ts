@@ -12,6 +12,7 @@ export class DocumentView {
   private controlsComponent: ControlsComponent;
   private notificationComponent: NotificationComponent;
   private modalComponent: ModalComponent;
+  private cleanupFunctions: (() => void)[] = [];
 
   constructor(containerId: string) {
     const element = document.getElementById(containerId);
@@ -33,6 +34,9 @@ export class DocumentView {
     onCreate: () => void,
     onViewModeChange: (mode: ViewMode) => void
   ): void {
+    // Clean up previous event listeners to prevent memory leaks
+    this.cleanup();
+
     this.container.innerHTML = `
       <div class="app-container">
         <header class="header">
@@ -109,10 +113,30 @@ export class DocumentView {
     onCreate: () => void,
     onViewModeChange: (mode: ViewMode) => void
   ): void {
-    this.controlsComponent.attachListeners(this.container, onSort, onViewModeChange);
+    // Attach controls listeners and get cleanup function
+    const controlsCleanup = this.controlsComponent.attachListeners(
+      this.container,
+      onSort,
+      onViewModeChange
+    );
+    this.cleanupFunctions.push(controlsCleanup);
 
-    const createBtn = this.container.querySelector('#createBtn');
-    createBtn?.addEventListener('click', onCreate);
+    // Attach create button listener
+    const createBtn = this.container.querySelector('#createBtn') as HTMLButtonElement;
+    if (createBtn) {
+      createBtn.addEventListener('click', onCreate);
+      this.cleanupFunctions.push(() => {
+        createBtn.removeEventListener('click', onCreate);
+      });
+    }
+  }
+
+  /**
+   * Cleans up all event listeners to prevent memory leaks
+   */
+  private cleanup(): void {
+    this.cleanupFunctions.forEach(cleanup => cleanup());
+    this.cleanupFunctions = [];
   }
 
   showNotification(message: string): void {

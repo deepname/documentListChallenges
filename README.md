@@ -141,6 +141,9 @@ The application fetches initial documents from `http://localhost:8080/documents`
 
 ```json
 {
+   "ID": "69517c79-a4b2-4f64-9c83-20e5678e4519",
+   "Title": "Arrogant Bastard Ale",
+   "Version": "5.3.15",
    "Attachments": [
       "European Amber Lager",
       "Wood-aged Beer"
@@ -160,10 +163,7 @@ The application fetches initial documents from `http://localhost:8080/documents`
       }
    ],
    "CreatedAt": "1912-03-08T06:01:39.382278739Z",
-   "ID": "69517c79-a4b2-4f64-9c83-20e5678e4519",
-   "Title": "Arrogant Bastard Ale",
    "UpdatedAt": "1952-02-29T22:21:13.817038244Z",
-   "Version": "5.3.15"
 },
 ```
 

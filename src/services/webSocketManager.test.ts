@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { WebSocketManager } from './webSocketManager';
 import { WebSocketService } from './webSocketService';
-import { Document } from '../models/document';
-import { SocketsNotification } from '../models/sockets';
-import { DocumentMapper } from '../utils/documentUtils';
+import type { Document } from '../models/document';
+import type { SocketsNotification } from '../models/sockets';
+import * as documentUtils from '../utils/documentUtils';
 
 // Mock dependencies
 vi.mock('./webSocketService');
@@ -67,8 +67,8 @@ describe('WebSocketManager', () => {
       return this;
     } as unknown as typeof WebSocketService);
 
-    // Mock DocumentMapper
-    vi.spyOn(DocumentMapper, 'fromSocketNotification').mockReturnValue(sampleDocument);
+    // Mock fromSocketNotification function
+    vi.spyOn(documentUtils, 'fromSocketNotification').mockReturnValue(sampleDocument);
   });
 
   describe('constructor', () => {
@@ -240,10 +240,8 @@ describe('WebSocketManager', () => {
       handleNotificationCallback(sampleNotification);
 
       // Assert
-      expect(DocumentMapper.fromSocketNotification).toHaveBeenCalledTimes(1);
-      expect(DocumentMapper.fromSocketNotification).toHaveBeenCalledWith(
-        sampleNotification
-      );
+      expect(documentUtils.fromSocketNotification).toHaveBeenCalledTimes(1);
+      expect(documentUtils.fromSocketNotification).toHaveBeenCalledWith(sampleNotification);
       expect(mockOnDocumentReceived).toHaveBeenCalledTimes(1);
       expect(mockOnDocumentReceived).toHaveBeenCalledWith(sampleDocument);
     });
@@ -262,7 +260,7 @@ describe('WebSocketManager', () => {
         ID: 'doc-789',
         Title: 'Second Document',
       };
-      const mapperSpy = vi.spyOn(DocumentMapper, 'fromSocketNotification');
+      const mapperSpy = vi.spyOn(documentUtils, 'fromSocketNotification');
       mapperSpy.mockReturnValueOnce(sampleDocument).mockReturnValueOnce(document2);
 
       // Act
@@ -270,7 +268,7 @@ describe('WebSocketManager', () => {
       handleNotificationCallback(notification2);
 
       // Assert
-      expect(DocumentMapper.fromSocketNotification).toHaveBeenCalledTimes(2);
+      expect(documentUtils.fromSocketNotification).toHaveBeenCalledTimes(2);
       expect(mockOnDocumentReceived).toHaveBeenCalledTimes(2);
       expect(mockOnDocumentReceived).toHaveBeenNthCalledWith(1, sampleDocument);
       expect(mockOnDocumentReceived).toHaveBeenNthCalledWith(2, document2);
@@ -292,9 +290,8 @@ describe('WebSocketManager', () => {
       handleNotificationCallback(notificationDifferentUser);
 
       // Assert
-      expect(DocumentMapper.fromSocketNotification).toHaveBeenCalledWith(
-        notificationDifferentUser
-      );
+      expect(documentUtils.fromSocketNotification).toHaveBeenCalledTimes(2);
+      expect(documentUtils.fromSocketNotification).toHaveBeenCalledWith(notificationDifferentUser);
       expect(mockOnDocumentReceived).toHaveBeenCalledTimes(1);
     });
 
