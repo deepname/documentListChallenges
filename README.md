@@ -272,7 +272,6 @@ This application is optimized for the **last 2 versions of Chrome**.
 ***browserslist***: Defines which browsers the project should support. It is used to configure build tools such as Babel or PostCSS.
 ***browserslist-to-esbuild***: Bridges the Browserslist and esbuild (the bundler used by Vite) to optimize the build for the target browsers.
 
-
 ## 📝 License
 
 MIT
