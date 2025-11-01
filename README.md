@@ -107,28 +107,29 @@ e2e/
 └── *.spec.ts              # Test specifications
 src/
 ├── controllers/
-│   └── DocumentController.ts # Business logic
+│   └── documentController.ts # Business logic
 ├── models/
-│   ├── Document.ts          # Document data model
-│   └── Sockets.ts           # WebSocket notification types
+│   ├── document.ts          # Document data model
+│   └── sockets.ts           # WebSocket notification types
 ├── services/
-│   ├── ApiService.ts        # HTTP API client
-│   └── WebSocketService.ts  # Real-time communication
+│   ├── apiService.ts          # HTTP API client
+│   └── webSocketService.ts    # Real-time communication
+│   └── storageService.ts      # localStorage utilities
+│   └── notificationService.ts # Notification utilities
+│   └── webSocketManager.ts    # Notification utilities
 ├── store/
-│   └── Store.ts             # Centralized state management
+│   └── store.ts             # Centralized state management
 ├── utils/
 │   ├── documentUtils.ts     # Document transformation utilities
 │   ├── htmlUtils.ts         # HTML escaping utilities
 │   └── storageUtils.ts      # localStorage utilities
 ├── views/
 |   ├── Components/
-|   |   ├── DocumentCard.tsx
-|   |   ├── DocumentList.tsx
-|   |   ├── DocumentModal.tsx
-|   |   ├── DocumentView.tsx
-|   |   ├── SortButton.tsx
-|   |   └── ViewModeToggle.tsx
-│   └── DocumentView.ts      # UI rendering
+|   |   ├── cardComponent.ts
+|   |   ├── controlsComponent.ts
+|   |   ├── notificationComponent.ts
+|   |   ├── modalComponent.ts
+│   └── documentView.ts      # UI rendering
 ├── main.ts                  # Application entry point
 └── style.css                # Global styles
 ```
