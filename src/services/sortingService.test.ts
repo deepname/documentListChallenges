@@ -19,11 +19,7 @@ describe('SortingService', () => {
         const newField: SortField = 'Title';
 
         // Act
-        const result: SortResult = sortingService.toggleSort(
-          currentField,
-          currentOrder,
-          newField
-        );
+        const result: SortResult = sortingService.toggleSort(currentField, currentOrder, newField);
 
         // Assert
         expect(result).toEqual({
@@ -39,11 +35,7 @@ describe('SortingService', () => {
         const newField: SortField = 'Title';
 
         // Act
-        const result: SortResult = sortingService.toggleSort(
-          currentField,
-          currentOrder,
-          newField
-        );
+        const result: SortResult = sortingService.toggleSort(currentField, currentOrder, newField);
 
         // Assert
         expect(result).toEqual({
@@ -59,11 +51,7 @@ describe('SortingService', () => {
         const newField: SortField = 'Version';
 
         // Act
-        const result: SortResult = sortingService.toggleSort(
-          currentField,
-          currentOrder,
-          newField
-        );
+        const result: SortResult = sortingService.toggleSort(currentField, currentOrder, newField);
 
         // Assert
         expect(result).toEqual({
@@ -79,11 +67,7 @@ describe('SortingService', () => {
         const newField: SortField = 'CreatedAt';
 
         // Act
-        const result: SortResult = sortingService.toggleSort(
-          currentField,
-          currentOrder,
-          newField
-        );
+        const result: SortResult = sortingService.toggleSort(currentField, currentOrder, newField);
 
         // Assert
         expect(result).toEqual({
@@ -101,11 +85,7 @@ describe('SortingService', () => {
         const newField: SortField = 'Version';
 
         // Act
-        const result: SortResult = sortingService.toggleSort(
-          currentField,
-          currentOrder,
-          newField
-        );
+        const result: SortResult = sortingService.toggleSort(currentField, currentOrder, newField);
 
         // Assert
         expect(result).toEqual({
@@ -121,11 +101,7 @@ describe('SortingService', () => {
         const newField: SortField = 'CreatedAt';
 
         // Act
-        const result: SortResult = sortingService.toggleSort(
-          currentField,
-          currentOrder,
-          newField
-        );
+        const result: SortResult = sortingService.toggleSort(currentField, currentOrder, newField);
 
         // Assert
         expect(result).toEqual({
@@ -141,11 +117,7 @@ describe('SortingService', () => {
         const newField: SortField = 'Title';
 
         // Act
-        const result: SortResult = sortingService.toggleSort(
-          currentField,
-          currentOrder,
-          newField
-        );
+        const result: SortResult = sortingService.toggleSort(currentField, currentOrder, newField);
 
         // Assert
         expect(result).toEqual({
@@ -161,11 +133,7 @@ describe('SortingService', () => {
         const newField: SortField = 'Version';
 
         // Act
-        const result: SortResult = sortingService.toggleSort(
-          currentField,
-          currentOrder,
-          newField
-        );
+        const result: SortResult = sortingService.toggleSort(currentField, currentOrder, newField);
 
         // Assert
         expect(result).toEqual({
@@ -181,11 +149,7 @@ describe('SortingService', () => {
         const newField: SortField = 'CreatedAt';
 
         // Act
-        const result: SortResult = sortingService.toggleSort(
-          currentField,
-          currentOrder,
-          newField
-        );
+        const result: SortResult = sortingService.toggleSort(currentField, currentOrder, newField);
 
         // Assert
         expect(result).toEqual({
@@ -203,7 +167,7 @@ describe('SortingService', () => {
 
         // Act - First toggle
         let result = sortingService.toggleSort(field, currentOrder, field);
-        
+
         // Assert - First toggle
         expect(result.order).toBe('desc');
 

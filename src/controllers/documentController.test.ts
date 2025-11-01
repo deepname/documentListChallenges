@@ -305,7 +305,7 @@ describe('DocumentController', () => {
       mockStore.getSortField.mockReturnValue('Title');
       mockStore.getSortOrder.mockReturnValue('asc');
       mockSortingService.toggleSort.mockReturnValue({ field: 'Version', order: 'asc' });
-      
+
       new DocumentController(containerId);
       const sortCallback = mockView.render.mock.calls[0][3];
 
@@ -324,7 +324,7 @@ describe('DocumentController', () => {
       mockStore.getSortField.mockReturnValue('Title');
       mockStore.getSortOrder.mockReturnValue('asc');
       mockSortingService.toggleSort.mockReturnValue({ field: 'Title', order: 'desc' });
-      
+
       new DocumentController(containerId);
       const sortCallback = mockView.render.mock.calls[0][3];
 
@@ -342,7 +342,7 @@ describe('DocumentController', () => {
       mockStore.getSortField.mockReturnValue('Version');
       mockStore.getSortOrder.mockReturnValue('desc');
       mockSortingService.toggleSort.mockReturnValue({ field: 'CreatedAt', order: 'asc' });
-      
+
       new DocumentController(containerId);
       const sortCallback = mockView.render.mock.calls[0][3];
 
@@ -592,7 +592,7 @@ describe('DocumentController', () => {
 
       // Act - User clicks create button
       createCallback();
-      
+
       // Act - User submits modal with document
       const modalSubmitCallback = mockView.showModal.mock.calls[0][0];
       modalSubmitCallback(sampleDocument);
@@ -606,7 +606,7 @@ describe('DocumentController', () => {
     it('should handle full WebSocket document reception flow', () => {
       // Arrange
       const controller = new DocumentController(containerId);
-      
+
       // Act
       controller.connect();
       const wsCallback = MockedWebSocketManager.mock.calls[0][0];

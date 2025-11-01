@@ -20,14 +20,14 @@ describe('fromSocketNotification', () => {
 
     const result = fromSocketNotification(notification);
 
-      expect(result.ID).toBe('doc-456');
-      expect(result.Title).toBe('Test Document');
-      expect(result.Version).toBe(1);
-      expect(result.Attachments).toEqual([]);
-      expect(result.Contributors).toHaveLength(1);
-      expect(result.Contributors[0].ID).toBe('user-123');
-      expect(result.Contributors[0].Name).toBe('John Doe');
-    });
+    expect(result.ID).toBe('doc-456');
+    expect(result.Title).toBe('Test Document');
+    expect(result.Version).toBe(1);
+    expect(result.Attachments).toEqual([]);
+    expect(result.Contributors).toHaveLength(1);
+    expect(result.Contributors[0].ID).toBe('user-123');
+    expect(result.Contributors[0].Name).toBe('John Doe');
+  });
 
   it('should convert timestamp string to Date objects for CreatedAt and UpdatedAt', () => {
     const notification: SocketsNotification = {

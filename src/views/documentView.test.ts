@@ -17,7 +17,9 @@ vi.mock('./components/controlsComponent', () => {
 
 vi.mock('./components/notificationComponent', () => {
   const NotificationComponent = vi.fn();
-  NotificationComponent.prototype.render = vi.fn().mockReturnValue('<div class="notification"></div>');
+  NotificationComponent.prototype.render = vi
+    .fn()
+    .mockReturnValue('<div class="notification"></div>');
   NotificationComponent.prototype.show = vi.fn();
   return { NotificationComponent };
 });
