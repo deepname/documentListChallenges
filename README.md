@@ -114,9 +114,9 @@ src/
 ├── services/
 │   ├── apiService.ts          # HTTP API client
 │   └── webSocketService.ts    # Real-time communication
-│   └── storageService.ts      # localStorage utilities
-│   └── notificationService.ts # Notification utilities
-│   └── webSocketManager.ts    # Notification utilities
+│   └── sortingService.ts      # sorting services
+│   └── notificationService.ts # Notification services
+│   └── webSocketManager.ts    # webSocket manager
 ├── store/
 │   └── store.ts             # Centralized state management
 ├── utils/
@@ -124,7 +124,7 @@ src/
 │   ├── htmlUtils.ts         # HTML escaping utilities
 │   └── storageUtils.ts      # localStorage utilities
 ├── views/
-|   ├── Components/
+|   ├── components/
 |   |   ├── cardComponent.ts
 |   |   ├── controlsComponent.ts
 |   |   ├── notificationComponent.ts

@@ -1,11 +1,12 @@
 import { Document } from '../models/document';
 import { parseDocumentDates } from '../utils/documentUtils';
+import { environment } from '../config/environment';
 
 export class ApiService {
   private baseUrl: string;
   private fetchFn: typeof fetch;
 
-  constructor(baseUrl = 'http://localhost:8080', fetchFn: typeof fetch = globalThis.fetch) {
+  constructor(baseUrl = environment.api.baseUrl, fetchFn: typeof fetch = globalThis.fetch) {
     this.baseUrl = baseUrl;
     this.fetchFn = fetchFn;
   }

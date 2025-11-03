@@ -1,4 +1,5 @@
 import { SocketsNotification } from '../models/sockets';
+import { environment } from '../config/environment';
 
 export class WebSocketService {
   private ws: WebSocket | null = null;
@@ -13,7 +14,7 @@ export class WebSocketService {
   }
 
   connect(): void {
-    const wsUrl = 'ws://localhost:8080/notifications';
+    const wsUrl = environment.websocket.url;
 
     try {
       this.ws = new WebSocket(wsUrl);
