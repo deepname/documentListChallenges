@@ -95,6 +95,22 @@ describe('ApiService', () => {
       expect(mockFetch).toHaveBeenCalledWith(`${customUrl}/documents`);
     });
 
+    it('should use injected fetch implementation when provided', async () => {
+      // Arrange
+      const injectedFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue(mockDocuments),
+      });
+      apiService = new ApiService(undefined, injectedFetch);
+
+      // Act
+      await apiService.fetchDocuments();
+
+      // Assert
+      expect(injectedFetch).toHaveBeenCalledWith('http://localhost:8080/documents');
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
     it('should throw error when response is not ok', async () => {
       // Arrange
       apiService = new ApiService();

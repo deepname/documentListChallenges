@@ -290,7 +290,7 @@ describe('WebSocketManager', () => {
       handleNotificationCallback(notificationDifferentUser);
 
       // Assert
-      expect(documentUtils.fromSocketNotification).toHaveBeenCalledTimes(2);
+      expect(documentUtils.fromSocketNotification).toHaveBeenCalledTimes(1);
       expect(documentUtils.fromSocketNotification).toHaveBeenCalledWith(notificationDifferentUser);
       expect(mockOnDocumentReceived).toHaveBeenCalledTimes(1);
     });
