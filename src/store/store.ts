@@ -74,21 +74,27 @@ export class Store {
     return () => this.listeners.delete(listener);
   }
 
-  getDocuments(): Document[] {
-    return this.sortDocuments([...this.documents]);
-  }
+  // Track documents by ID for faster lookup
+  private documentMap = new Map<string, boolean>();
 
   addDocument(document: Document): void {
-    // Prevent duplicate documents
-    const exists = this.documents.some(doc => doc.ID === document.ID);
-    if (exists) {
+    // Fast duplicate check using Map
+    if (this.documentMap.has(document.ID)) {
       console.warn(`Document with ID ${document.ID} already exists`);
       return;
     }
 
+    // Add to documents array and map
     this.documents.push(document);
+    this.documentMap.set(document.ID, true);
     saveDocuments(this.documents);
+
+    // Notify listeners
     this.notify();
+  }
+
+  getDocuments(): Document[] {
+    return this.sortDocuments([...this.documents]);
   }
 
   setSortField(field: SortField): void {
