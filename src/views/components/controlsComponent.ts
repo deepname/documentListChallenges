@@ -3,17 +3,25 @@ import { SortField, ViewMode } from '../../models/document';
 export class ControlsComponent {
   render(sortField: SortField, viewMode: ViewMode): string {
     return `
-      <div class="controls">
+      <div class="controls" role="region" aria-labelledby="sortControlsHeading">
         <div class="sort-controls">
-          <label>Sort by:</label>
-          <select class="sort-dropdown" id="sortDropdown">
+          <span id="sortControlsHeading" class="visually-hidden">Sorting controls</span>
+          <label for="sortDropdown">Sort by:</label>
+          <select class="sort-dropdown" id="sortDropdown" aria-label="Sort documents">
             <option value="Title" ${sortField === 'Title' ? 'selected' : ''}>Name</option>
             <option value="Version" ${sortField === 'Version' ? 'selected' : ''}>Version</option>
             <option value="CreatedAt" ${sortField === 'CreatedAt' ? 'selected' : ''}>Date</option>
           </select>
         </div>
         <div class="view-controls">
-          <button class="view-btn ${viewMode === 'list' ? 'active' : ''}" data-view="list" title="List view">
+          <button
+            class="view-btn ${viewMode === 'list' ? 'active' : ''}"
+            data-view="list"
+            type="button"
+            title="List view"
+            aria-pressed="${viewMode === 'list'}"
+            aria-controls="documentContainer"
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="8" y1="6" x2="21" y2="6"></line>
               <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -23,7 +31,14 @@ export class ControlsComponent {
               <line x1="3" y1="18" x2="3.01" y2="18"></line>
             </svg>
           </button>
-          <button class="view-btn ${viewMode === 'grid' ? 'active' : ''}" data-view="grid" title="Grid view">
+          <button
+            class="view-btn ${viewMode === 'grid' ? 'active' : ''}"
+            data-view="grid"
+            type="button"
+            title="Grid view"
+            aria-pressed="${viewMode === 'grid'}"
+            aria-controls="documentContainer"
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="7" height="7"></rect>
               <rect x="14" y="3" width="7" height="7"></rect>

@@ -1,13 +1,15 @@
-import { Document } from '../../models/document';
+import type { Document } from '../../models/document';
 import { escapeHtml } from '../../utils/htmlUtils';
 
 export class CardComponent {
-  render(doc: Document): string {
+  render(doc: Document, headingId?: string): string {
+    const titleId = headingId ?? `card-${String(doc.ID).replace(/[^a-zA-Z0-9_-]/g, '-')}-title`;
+
     return `
-      <div class="document-card">
+      <article class="document-card" role="listitem" aria-labelledby="${titleId}">
         <div class="card-title">
-          <h3>${escapeHtml(doc.Title)}</h3>
-          <div class="card-version">Version ${doc.Version}</div>
+          <h3 id="${titleId}">${escapeHtml(doc.Title)}</h3>
+          <div class="card-version">Version ${escapeHtml(String(doc.Version))}</div>
         </div>
         
         <div class="card-section">
@@ -29,7 +31,7 @@ export class CardComponent {
               : ''
           }
         </div>
-      </div>
+      </article>
     `;
   }
 }

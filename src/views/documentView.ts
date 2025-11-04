@@ -1,4 +1,4 @@
-import { Document, SortField, ViewMode } from '../models/document';
+import type { Document, SortField, ViewMode } from '../models/document';
 import { CardComponent } from './components/cardComponent';
 import { ControlsComponent } from './components/controlsComponent';
 import { NotificationComponent } from './components/notificationComponent';
@@ -18,6 +18,7 @@ export class DocumentView {
     if (!element) {
       throw new Error(`Container with id "${containerId}" not found`);
     }
+
     this.container = element;
     this.cardComponent = new CardComponent();
     this.controlsComponent = new ControlsComponent();
@@ -37,18 +38,26 @@ export class DocumentView {
     this.cleanup();
 
     this.container.innerHTML = `
-      <div class="app-container">
+      <div class="app-container" role="main" aria-labelledby="documentsHeading">
         <header class="header">
-          <h1>Documents</h1>
+          <h1 id="documentsHeading">Documents</h1>
         </header>
         
         ${this.controlsComponent.render(sortField, viewMode)}
 
-        <div class="document-container ${viewMode}">
+        <div id="documentContainer" class="document-container ${viewMode}" role="list" aria-live="polite">
           ${viewMode === 'list' ? this.renderListView(documents) : this.renderGridView(documents)}
         </div>
 
-        <button class="btn-add" id="createBtn">+ Add document</button>
+        <button
+          class="btn-add"
+          id="createBtn"
+          type="button"
+          aria-haspopup="dialog"
+          aria-controls="modal"
+        >
+          + Add document
+        </button>
 
         ${this.notificationComponent.render()}
       </div>
@@ -58,7 +67,7 @@ export class DocumentView {
   }
 
   private renderDocumentCard(doc: Document): string {
-    return this.cardComponent.render(doc);
+    return this.cardComponent.render(doc, this.getDocumentTitleId(doc));
   }
 
   private renderListView(documents: Document[]): string {
@@ -67,7 +76,7 @@ export class DocumentView {
     }
 
     return `
-      <div class="list-header">
+      <div class="list-header" role="presentation" aria-hidden="true">
         <div class="col-name">Name</div>
         <div class="col-contributors">Contributors</div>
         <div class="col-attachments">Attachments</div>
@@ -77,16 +86,18 @@ export class DocumentView {
   }
 
   private renderListItem(doc: Document): string {
+    const headingId = this.getDocumentTitleId(doc);
+
     return `
-      <div class="list-item">
-        <div class="col-name">
-          <div class="doc-name">${escapeHtml(doc.Title)}</div>
-          <div class="doc-version">Version ${doc.Version}</div>
+      <div class="list-item" role="listitem" aria-labelledby="${headingId}">
+        <div class="col-name" data-label="Name">
+          <div class="doc-name" id="${headingId}">${escapeHtml(doc.Title)}</div>
+          <div class="doc-version">Version ${escapeHtml(String(doc.Version))}</div>
         </div>
-        <div class="col-contributors">
+        <div class="col-contributors" data-label="Contributors">
           ${doc.Contributors.map(c => `<div class="contributor-name">${escapeHtml(c.Name)}</div>`).join('')}
         </div>
-        <div class="col-attachments">
+        <div class="col-attachments" data-label="Attachments">
           ${
             doc.Attachments.length > 0
               ? doc.Attachments.map(
@@ -144,5 +155,9 @@ export class DocumentView {
 
   showModal(onSubmit: (doc: Document) => void): void {
     this.modalComponent.show(this.container, onSubmit);
+  }
+
+  private getDocumentTitleId(doc: Document): string {
+    return `doc-${String(doc.ID).replace(/[^a-zA-Z0-9_-]/g, '-')}-title`;
   }
 }
