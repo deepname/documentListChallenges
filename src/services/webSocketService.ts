@@ -26,8 +26,14 @@ export class WebSocketService {
 
       this.ws.onmessage = event => {
         try {
+          // Parse data synchronously (this is fast)
           const notification: SocketsNotification = JSON.parse(event.data);
-          this.onDocumentReceived(notification);
+          
+          // Defer processing to the next event loop cycle
+          // This simple approach prevents blocking the main thread
+          setTimeout(() => {
+            this.onDocumentReceived(notification);
+          }, 0);
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
         }

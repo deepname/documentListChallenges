@@ -8,7 +8,8 @@ export class ApiService {
 
   constructor(baseUrl = environment.api.baseUrl, fetchFn: typeof fetch = globalThis.fetch) {
     this.baseUrl = baseUrl;
-    this.fetchFn = fetchFn;
+    // Bind fetch to its original context to prevent 'Illegal invocation' error
+    this.fetchFn = fetchFn.bind(globalThis);
   }
 
   async fetchDocuments(): Promise<Document[]> {
