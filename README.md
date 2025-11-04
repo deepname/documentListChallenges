@@ -49,6 +49,12 @@ npm install
 # Start development server
 npm run dev
 
+# Start server
+npm run server
+
+# Start Vite and Go API server together
+npm run dev:full
+
 # Build for production
 npm run build
 
