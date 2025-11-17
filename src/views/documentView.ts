@@ -37,6 +37,15 @@ export class DocumentView {
     // Clean up previous event listeners to prevent memory leaks
     this.cleanup();
 
+    const existingModal = this.container.querySelector('#modal');
+    const focusedModalElement =
+      existingModal &&
+      document.activeElement instanceof HTMLElement &&
+      existingModal.contains(document.activeElement)
+        ? (document.activeElement as HTMLElement)
+        : null;
+    const shouldPreserveModal = existingModal && !existingModal.classList.contains('hidden');
+
     this.container.innerHTML = `
       <div class="app-container" role="main" aria-labelledby="documentsHeading">
         <header class="header">
@@ -62,6 +71,13 @@ export class DocumentView {
         ${this.notificationComponent.render()}
       </div>
     `;
+
+    if (shouldPreserveModal && existingModal instanceof HTMLElement) {
+      this.container.appendChild(existingModal);
+      if (focusedModalElement && typeof focusedModalElement.focus === 'function') {
+        focusedModalElement.focus();
+      }
+    }
 
     this.attachEventListeners(onSort, onCreate, onViewModeChange);
   }
